@@ -1,0 +1,4 @@
+id,user_id,name,type,initial_balance,created_at
+1,1,Conta Corrente,Corrente,1000.00,2023-01-01 10:05:00
+2,1,Poupança,Poupança,5000.00,2023-01-01 10:10:00
+3,2,Carteira,Espécie,200.00,2023-01-02 11:05:00

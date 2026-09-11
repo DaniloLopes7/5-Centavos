@@ -1,14 +1,14 @@
 # 5 Centavos
 
-> Plataforma de gerenciamento financeiro pessoal com foco em **Ciência de Dados, Analytics e Inteligência Artificial**.
+Plataforma de gerenciamento financeiro pessoal com foco em **Ciência de Dados, Analytics e Inteligência Artificial**.
 
-## 📌 Sobre o projeto
+## Sobre o projeto
 
-O **5 Centavos** é uma plataforma de gerenciamento financeiro pessoal desenvolvida para auxiliar usuários a organizar suas finanças, registrar receitas e despesas, acompanhar saldos e transformar dados financeiros em informações úteis para tomada de decisão.
+O **5 Centavos** é uma ferramenta para organizar finanças pessoais, registrar receitas e despesas, acompanhar saldos e transformar esses dados em informações para tomada de decisão.
 
-O projeto também possui como objetivo aplicar, de forma prática e incremental, conhecimentos de **Programação, Banco de Dados, Engenharia de Dados, Analytics e Inteligência Artificial**.
+O objetivo é aplicar conceitos de **Programação, Banco de Dados, Engenharia de Dados, Analytics e IA** de forma prática.
 
-## 🎯 Objetivos
+## Objetivos
 
 * Organizar receitas e despesas;
 * Gerenciar contas financeiras;
@@ -19,11 +19,11 @@ O projeto também possui como objetivo aplicar, de forma prática e incremental,
 * Criar visualizações;
 * Desenvolver processos de ETL;
 * Aplicar Inteligência Artificial;
-* Construir uma aplicação organizada, testável e escalável.
+* Construir uma aplicação organizada e testável.
 
-## 🛠️ Tecnologias
+## Tecnologias
 
-As tecnologias serão adicionadas progressivamente conforme a evolução do projeto.
+As tecnologias são adicionadas conforme a evolução do projeto.
 
 | Tecnologia   | Utilização                     |
 | ------------ | ------------------------------ |
@@ -40,25 +40,25 @@ As tecnologias serão adicionadas progressivamente conforme a evolução do proj
 | Pytest       | Testes automatizados           |
 | Docker       | Containerização                |
 
-## 📈 Evolução do projeto
+## Evolução do projeto
 
-O 5 Centavos será desenvolvido através de versões incrementais.
+Desenvolvimento através de versões incrementais.
 
 | Versão | Etapa                       | Status                |
 | ------ | --------------------------- | --------------------- |
 | v0.1.0 | Planejamento e documentação | ✅ Finalizado          |
-| v0.2.0 | Estrutura inicial em Python | 🔄 Em desenvolvimento  |
-| v0.3.0 | Sistema financeiro + SQLite | ⏳ Pendente            |
-| v0.4.0 | PostgreSQL + arquitetura    | ⏳ Pendente            |
+| v0.2.0 | Estrutura inicial em Python | ✅ Finalizado          |
+| v0.3.0 | Sistema financeiro + SQLite | ✅ Finalizado          |
+| v0.4.0 | PostgreSQL + arquitetura    | 🔄 Em desenvolvimento  |
 | v0.5.0 | API com FastAPI             | ⏳ Pendente            |
 | v0.6.0 | Analytics                   | ⏳ Pendente            |
 | v0.7.0 | Dashboard                   | ⏳ Pendente            |
 | v0.8.0 | Inteligência Artificial     | ⏳ Pendente            |
 | v1.0.0 | Docker + Deploy             | ⏳ Pendente            |
 
-> Cada versão representa um marco funcional do projeto e será registrada através do Git.
+> Cada versão é um marco funcional registrado via Git.
 
-## 📂 Estrutura do projeto
+## Estrutura do projeto
 
 ```text
 5-Centavos/
@@ -80,32 +80,26 @@ O 5 Centavos será desenvolvido através de versões incrementais.
 └── LICENSE
 ```
 
-## 🧠 Conceitos aplicados
+## Conceitos aplicados
 
 * Python;
-* Programação Orientada a Objetos;
-* Banco de Dados e SQL;
+* POO;
+* SQL e Bancos de Dados;
 * APIs REST;
 * Arquitetura de software;
-* Engenharia de Dados;
-* ETL;
-* Análise exploratória de dados;
-* Estatística;
-* Visualização de dados;
-* Machine Learning;
-* Inteligência Artificial;
+* Engenharia de Dados e ETL;
+* Análise Exploratória de Dados;
+* Estatística e Visualização;
+* Machine Learning e IA;
 * Testes automatizados;
-* Git e GitHub;
-* Docker.
+* Git e Docker.
 
-## 🚀 Objetivo final
+## Objetivo final
 
-Construir uma solução capaz de integrar **gestão financeira, processamento de dados, Analytics e Inteligência Artificial** em uma única plataforma.
+Integrar **gestão financeira, processamento de dados, Analytics e IA** em uma única plataforma, evoluindo de um script simples para uma solução estruturada e pronta para produção.
 
-O projeto será desenvolvido de forma incremental, permitindo acompanhar sua evolução desde uma aplicação inicial até uma solução estruturada e preparada para execução em ambiente de produção.
-
-## 👨‍💻 Autor
+## Autor
 
 **Danilo Almeida Lopes**
 
-Estudante de **Ciência de Dados**, com interesse em **Analytics, Engenharia de Dados, Inteligência Artificial e desenvolvimento de soluções baseadas em dados**.
+Estudante de **Ciência de Dados**, interessado em Analytics, Engenharia de Dados e IA.
