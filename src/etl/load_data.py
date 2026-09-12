@@ -7,11 +7,9 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 DB_PATH = os.path.join(DATA_DIR, "finance.db")
 
 def get_engine():
-    """Cria a conexão com o banco de dados SQLite."""
     return create_engine(f"sqlite:///{DB_PATH}")
 
 def load_csv_to_sql(engine, filename, table_name):
-    """Lê um CSV e carrega no banco de dados."""
     path = os.path.join(DATA_DIR, filename)
     print(f"Carregando {filename} para a tabela {table_name}...")
 
@@ -27,18 +25,75 @@ def run_etl():
     with engine.connect() as conn:
         conn.execute(text("PRAGMA foreign_keys = OFF;"))
 
-        result = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table';"))
-        existing_tables = [row[0] for row in result]
+        # Reset e criação de tabelas
+        tables_schema = {
+            "users": """
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR NOT NULL,
+                    email VARCHAR NOT NULL UNIQUE,
+                    password_hash VARCHAR NOT NULL,
+                    created_at DATETIME NOT NULL
+                )
+            """,
+            "accounts": """
+                CREATE TABLE IF NOT EXISTS accounts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    name VARCHAR NOT NULL,
+                    type VARCHAR NOT NULL,
+                    initial_balance DECIMAL NOT NULL,
+                    created_at DATETIME NOT NULL
+                )
+            """,
+            "categories": """
+                CREATE TABLE IF NOT EXISTS categories (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    name VARCHAR NOT NULL,
+                    type VARCHAR NOT NULL
+                )
+            """,
+            "goals": """
+                CREATE TABLE IF NOT EXISTS goals (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    name VARCHAR NOT NULL,
+                    target_amount DECIMAL NOT NULL,
+                    current_amount DECIMAL NOT NULL,
+                    deadline DATE,
+                    created_at DATETIME NOT NULL
+                )
+            """,
+            "transactions": """
+                CREATE TABLE IF NOT EXISTS transactions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    account_id INTEGER NOT NULL,
+                    category_id INTEGER NOT NULL,
+                    description VARCHAR NOT NULL,
+                    amount DECIMAL NOT NULL,
+                    type VARCHAR NOT NULL,
+                    date DATE NOT NULL,
+                    created_at DATETIME NOT NULL,
+                    FOREIGN KEY(account_id) REFERENCES accounts(id),
+                    FOREIGN KEY(category_id) REFERENCES categories(id)
+                )
+            """
+        }
 
-        tables_to_clean = ["transactions", "goals", "categories", "accounts", "users"]
-        for table in tables_to_clean:
-            if table in existing_tables:
-                conn.execute(text(f"DELETE FROM {table};"))
+        # Drop tabelas para aplicar novo schema
+        for table in ["transactions", "goals", "categories", "accounts", "users"]:
+            conn.execute(text(f"DROP TABLE IF EXISTS {table}"))
+
+        # Criação de tabelas
+        for table in ["users", "accounts", "categories", "goals", "transactions"]:
+            conn.execute(text(tables_schema[table]))
 
         conn.execute(text("PRAGMA foreign_keys = ON;"))
         conn.commit()
 
     load_order = [
+
         ("usuarios.csv", "users"),
         ("contas.csv", "accounts"),
         ("categorias.csv", "categories"),

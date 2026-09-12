@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,7 +10,31 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 DB_PATH = os.path.join(BASE_DIR, "data", "finance.db")
 engine = create_engine(f"sqlite:///{DB_PATH}")
 
+def ensure_database_exists():
+    if not os.path.exists(DB_PATH):
+        print("\n[INIT] Banco de dados não encontrado. Inicializando...")
+        _run_etl_process()
+        return
+
+    query = "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
+    result = execute_query(query, fetch=True)
+    if not result:
+        print("\n[INIT] Banco de dados incompleto. Re-inicializando...")
+        _run_etl_process()
+
+def _run_etl_process():
+    try:
+        src_path = os.path.join(BASE_DIR, "src")
+        if src_path not in sys.path:
+            sys.path.append(src_path)
+
+        from etl.load_data import run_etl
+        run_etl()
+    except Exception as e:
+        print(f"\n[INIT ERROR] Falha ao inicializar o banco de dados: {e}")
+
 def execute_query(query, params=None, fetch=False):
+
     try:
         with engine.begin() as conn:
             result = conn.execute(text(query), params or {})
@@ -47,7 +72,6 @@ def get_user_by_email(email):
     return results[0] if results else None
 
 def get_accounts_by_user(user_id):
-    """Retorna todas as contas financeiras de um usuário."""
     if user_id is None:
         return []
     query = "SELECT * FROM accounts WHERE user_id = :user_id"
@@ -104,6 +128,22 @@ def get_categories_by_user(user_id):
 def create_category(user_id, name, cat_type):
     query = "INSERT INTO categories (user_id, name, type) VALUES (:uid, :name, :type)"
     return execute_query(query, {"uid": int(user_id), "name": name, "type": cat_type})
+
+def create_default_categories(user_id):
+    defaults = [
+        ("Alimentação", "DESPESA"),
+        ("Lazer", "DESPESA"),
+        ("Transporte", "DESPESA"),
+        ("Saúde", "DESPESA"),
+        ("Educação", "DESPESA"),
+        ("Moradia", "DESPESA"),
+        ("Salário", "RECEITA"),
+        ("Freelance", "RECEITA"),
+        ("Outros", "DESPESA"),
+    ]
+    for name, cat_type in defaults:
+        create_category(user_id, name, cat_type)
+    return True
 
 def get_goals_by_user(user_id):
     query = "SELECT * FROM goals WHERE user_id = :user_id"

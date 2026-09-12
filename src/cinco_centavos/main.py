@@ -1,5 +1,6 @@
 import os
 from database import (
+    ensure_database_exists,
     get_user_by_id,
     get_user_by_email,
     check_password,
@@ -10,6 +11,7 @@ from database import (
     get_transactions_by_account,
     get_categories_by_user,
     create_category,
+    create_default_categories,
     get_goals_by_user,
     create_goal,
     update_goal_progress,
@@ -52,7 +54,10 @@ def register_screen():
     password = input("Senha: ")
 
     if create_user(name, email, password):
-        print("\n✅ Conta criada com sucesso! Agora você pode fazer login.")
+        user = get_user_by_email(email)
+        if user:
+            create_default_categories(user['id'])
+        print("\n✅ Conta criada com sucesso! Categorias padrão foram adicionadas.")
     else:
         print("\n❌ Erro ao criar conta. O e-mail pode já estar em uso.")
 
@@ -187,10 +192,10 @@ def transaction_menu(user):
             input("Pressione Enter para voltar.")
             return
         cat_id = categories[cat_choice - 1]['id']
+        trans_type = categories[cat_choice - 1]['type']
 
         description = input("Descrição: ")
         amount = float(input("Valor: "))
-        trans_type = input("Tipo (RECEITA ou DESPESA): ").upper()
         date = input("Data (AAAA-MM-DD): ")
 
         if add_transaction(acc_id, cat_id, description, amount, trans_type, date):
@@ -285,4 +290,5 @@ def category_menu(user):
     input("\nPressione Enter.")
 
 if __name__ == "__main__":
+    ensure_database_exists()
     main_menu()
