@@ -1,13 +1,15 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, "data")
-DB_PATH = os.path.join(DATA_DIR, "finance.db")
 
 def get_engine():
-    return create_engine(f"sqlite:///{DB_PATH}")
+    return create_engine(os.getenv("DATABASE_URL"))
 
 def load_csv_to_sql(engine, filename, table_name):
     path = os.path.join(DATA_DIR, filename)
@@ -23,32 +25,31 @@ def run_etl():
     engine = get_engine()
 
     with engine.connect() as conn:
-        conn.execute(text("PRAGMA foreign_keys = OFF;"))
 
         # Reset e criação de tabelas
         tables_schema = {
             "users": """
                 CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     name VARCHAR NOT NULL,
                     email VARCHAR NOT NULL UNIQUE,
                     password_hash VARCHAR NOT NULL,
-                    created_at DATETIME NOT NULL
+                    created_at TIMESTAMP NOT NULL
                 )
             """,
             "accounts": """
                 CREATE TABLE IF NOT EXISTS accounts (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
                     name VARCHAR NOT NULL,
                     type VARCHAR NOT NULL,
                     initial_balance DECIMAL NOT NULL,
-                    created_at DATETIME NOT NULL
+                    created_at TIMESTAMP NOT NULL
                 )
             """,
             "categories": """
                 CREATE TABLE IF NOT EXISTS categories (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
                     name VARCHAR NOT NULL,
                     type VARCHAR NOT NULL
@@ -56,25 +57,25 @@ def run_etl():
             """,
             "goals": """
                 CREATE TABLE IF NOT EXISTS goals (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     user_id INTEGER NOT NULL,
                     name VARCHAR NOT NULL,
                     target_amount DECIMAL NOT NULL,
                     current_amount DECIMAL NOT NULL,
                     deadline DATE,
-                    created_at DATETIME NOT NULL
+                    created_at TIMESTAMP NOT NULL
                 )
             """,
             "transactions": """
                 CREATE TABLE IF NOT EXISTS transactions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     account_id INTEGER NOT NULL,
                     category_id INTEGER NOT NULL,
                     description VARCHAR NOT NULL,
                     amount DECIMAL NOT NULL,
                     type VARCHAR NOT NULL,
                     date DATE NOT NULL,
-                    created_at DATETIME NOT NULL,
+                    created_at TIMESTAMP NOT NULL,
                     FOREIGN KEY(account_id) REFERENCES accounts(id),
                     FOREIGN KEY(category_id) REFERENCES categories(id)
                 )
@@ -89,7 +90,6 @@ def run_etl():
         for table in ["users", "accounts", "categories", "goals", "transactions"]:
             conn.execute(text(tables_schema[table]))
 
-        conn.execute(text("PRAGMA foreign_keys = ON;"))
         conn.commit()
 
     load_order = [
@@ -105,7 +105,7 @@ def run_etl():
         load_csv_to_sql(engine, csv_file, table)
 
     print("\n--- ETL Concluído com Sucesso! ---")
-    print(f"Banco de dados atualizado em: {DB_PATH}")
+    print(f"Banco de dados atualizado via PostgreSQL.")
 
 if __name__ == "__main__":
     run_etl()

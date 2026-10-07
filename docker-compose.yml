@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: cinco-centavos-db
+    environment:
+      POSTGRES_DB: five_centavos
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d five_centavos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cinco-centavos-network
+
+  # API FastAPI
+  api:
+    build: .
+    container_name: cinco-centavos-api
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql://user:user@postgres:5432/five_centavos
+      API_BASE_URL: http://localhost:8000/api/v1
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    networks:
+      - cinco-centavos-network
+    restart: unless-stopped
+
+  # Dashboard Streamlit
+  dashboard:
+    build: .
+    container_name: cinco-centavos-dashboard
+    command: streamlit run src/dashboard/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    environment:
+      API_BASE_URL: http://api:8000/api/v1
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    volumes:
+      - ./src:/app/src
+    networks:
+      - cinco-centavos-network
+    restart: unless-stopped
+
+  # ETL Worker (opcional)
+  etl:
+    build: .
+    container_name: cinco-centavos-etl
+    command: python3 src/etl/load_data.py
+    environment:
+      DATABASE_URL: postgresql://user:user@postgres:5432/five_centavos
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    networks:
+      - cinco-centavos-network
+    profiles:
+      - etl
+
+volumes:
+  postgres_data:
+
+networks:
+  cinco-centavos-network:
+    driver: bridge

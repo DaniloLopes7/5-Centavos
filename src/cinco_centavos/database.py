@@ -4,19 +4,16 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 import bcrypt
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configurações de Caminho
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DB_PATH = os.path.join(BASE_DIR, "data", "finance.db")
-engine = create_engine(f"sqlite:///{DB_PATH}")
+engine = create_engine(os.getenv("DATABASE_URL"))
 
 def ensure_database_exists():
-    if not os.path.exists(DB_PATH):
-        print("\n[INIT] Banco de dados não encontrado. Inicializando...")
-        _run_etl_process()
-        return
-
-    query = "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
+    query = "SELECT table_name FROM information_schema.tables WHERE table_name = 'users'"
     result = execute_query(query, fetch=True)
     if not result:
         print("\n[INIT] Banco de dados incompleto. Re-inicializando...")
@@ -58,7 +55,7 @@ def create_user(name, email, password):
         return False
 
     hashed_pw = hash_password(password)
-    query = "INSERT INTO users (name, email, password_hash, created_at) VALUES (:name, :email, :pw, datetime('now'))"
+    query = "INSERT INTO users (name, email, password_hash, created_at) VALUES (:name, :email, :pw, CURRENT_TIMESTAMP)"
     return execute_query(query, {"name": name, "email": email, "pw": hashed_pw})
 
 def get_user_by_id(user_id):
@@ -88,7 +85,7 @@ def create_account(user_id, name, account_type, initial_balance):
     if user_id is None:
         print("Erro: ID do usuário é inválido.")
         return False
-    query = "INSERT INTO accounts (user_id, name, type, initial_balance, created_at) VALUES (:uid, :name, :type, :bal, datetime('now'))"
+    query = "INSERT INTO accounts (user_id, name, type, initial_balance, created_at) VALUES (:uid, :name, :type, :bal, CURRENT_TIMESTAMP)"
     return execute_query(query, {"uid": int(user_id), "name": name, "type": account_type, "bal": initial_balance})
 
 def calculate_balance(account_id):
@@ -112,8 +109,8 @@ def add_transaction(account_id, category_id, description, amount, trans_type, da
         return False
     query = """
         INSERT INTO transactions (account_id, category_id, description, amount, type, date, created_at)
-        VALUES (:acc_id, :cat_id, :desc, :amt, :type, :date, datetime('now'))
-    """
+        VALUES (:acc_id, :cat_id, :desc, :amt, :type, :date, CURRENT_TIMESTAMP)
+"""
     params = {"acc_id": int(account_id), "cat_id": int(category_id), "desc": description, "amt": amount, "type": trans_type, "date": date}
     return execute_query(query, params)
 
@@ -150,7 +147,7 @@ def get_goals_by_user(user_id):
     return execute_query(query, {"user_id": int(user_id)}, fetch=True) or []
 
 def create_goal(user_id, name, target_amount, deadline=None):
-    query = "INSERT INTO goals (user_id, name, target_amount, current_amount, deadline, created_at) VALUES (:uid, :name, :target, 0.0, :deadline, datetime('now'))"
+    query = "INSERT INTO goals (user_id, name, target_amount, current_amount, deadline, created_at) VALUES (:uid, :name, :target, 0.0, :deadline, CURRENT_TIMESTAMP)"
     return execute_query(query, {"uid": int(user_id), "name": name, "target": target_amount, "deadline": deadline})
 
 def update_goal_progress(goal_id, amount_to_add):
