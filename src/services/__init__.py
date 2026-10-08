@@ -157,8 +157,8 @@ class TransactionService:
         if not category:
             raise ValueError("Categoria não encontrada.")
         
-        # Validate category type matches transaction type
-        if category['type'] != trans_type:
+        # Validate category type matches transaction type (case-insensitive)
+        if category['type'].upper() != trans_type.upper():
             raise ValueError(f"Tipo da categoria ({category['type']}) não corresponde ao tipo da transação ({trans_type}).")
         
         if TransactionRepository.create(account_id, category_id, description, amount, trans_type, date):
@@ -185,11 +185,11 @@ class TransactionService:
             category = CategoryRepository.get_by_id(kwargs['category_id'])
             if not category:
                 raise ValueError("Categoria não encontrada.")
-            if 'type' in kwargs and category['type'] != kwargs['type']:
+            if 'type' in kwargs and category['type'].upper() != kwargs['type'].upper():
                 raise ValueError("Tipo da categoria não corresponde ao tipo da transação.")
             elif 'type' not in kwargs:
                 trans = TransactionRepository.get_by_id(transaction_id)
-                if trans and category['type'] != trans['type']:
+                if trans and category['type'].upper() != trans['type'].upper():
                     raise ValueError("Tipo da categoria não corresponde ao tipo da transação.")
         
         return TransactionRepository.update(transaction_id, **kwargs)
