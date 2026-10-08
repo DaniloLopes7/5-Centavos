@@ -104,6 +104,12 @@ def run_etl():
     for csv_file, table in load_order:
         load_csv_to_sql(engine, csv_file, table)
 
+    # Atualiza sequences após carga de dados com IDs explícitos
+    with engine.connect() as conn:
+        for table in ["users", "accounts", "categories", "goals", "transactions"]:
+            conn.execute(text(f"SELECT setval('{table}_id_seq', COALESCE((SELECT MAX(id) FROM {table}), 0))"))
+        conn.commit()
+
     print("\n--- ETL Concluído com Sucesso! ---")
     print(f"Banco de dados atualizado via PostgreSQL.")
 

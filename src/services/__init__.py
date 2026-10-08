@@ -58,8 +58,11 @@ class UserService:
 
 class AccountService:
     @staticmethod
-    def create(user_id: int, name: str, account_type: str, initial_balance: Decimal) -> bool:
-        return AccountRepository.create(user_id, name, account_type, initial_balance)
+    def create(user_id: int, name: str, account_type: str, initial_balance: Decimal) -> Optional[dict]:
+        if AccountRepository.create(user_id, name, account_type, initial_balance):
+            accounts = AccountRepository.get_by_user(user_id)
+            return accounts[-1] if accounts else None
+        return None
 
     @staticmethod
     def get_user_accounts(user_id: int) -> List[dict]:
@@ -111,8 +114,11 @@ class AccountService:
 
 class CategoryService:
     @staticmethod
-    def create(user_id: int, name: str, cat_type: str) -> bool:
-        return CategoryRepository.create(user_id, name, cat_type)
+    def create(user_id: int, name: str, cat_type: str) -> Optional[dict]:
+        if CategoryRepository.create(user_id, name, cat_type):
+            categories = CategoryRepository.get_by_user(user_id)
+            return categories[-1] if categories else None
+        return None
 
     @staticmethod
     def get_user_categories(user_id: int) -> List[dict]:
@@ -140,7 +146,7 @@ class TransactionService:
         amount: Decimal,
         trans_type: str,
         date: datetime
-    ) -> bool:
+    ) -> Optional[dict]:
         # Validate account exists
         account = AccountRepository.get_by_id(account_id)
         if not account:
@@ -155,7 +161,10 @@ class TransactionService:
         if category['type'] != trans_type:
             raise ValueError(f"Tipo da categoria ({category['type']}) não corresponde ao tipo da transação ({trans_type}).")
         
-        return TransactionRepository.create(account_id, category_id, description, amount, trans_type, date)
+        if TransactionRepository.create(account_id, category_id, description, amount, trans_type, date):
+            transactions = TransactionRepository.get_by_account(account_id)
+            return transactions[0] if transactions else None
+        return None
 
     @staticmethod
     def get_account_transactions(account_id: int) -> List[dict]:
@@ -192,8 +201,11 @@ class TransactionService:
 
 class GoalService:
     @staticmethod
-    def create(user_id: int, name: str, target_amount: Decimal, deadline: Optional[datetime] = None) -> bool:
-        return GoalRepository.create(user_id, name, target_amount, deadline)
+    def create(user_id: int, name: str, target_amount: Decimal, deadline: Optional[datetime] = None) -> Optional[dict]:
+        if GoalRepository.create(user_id, name, target_amount, deadline):
+            goals = GoalRepository.get_by_user(user_id)
+            return goals[-1] if goals else None
+        return None
 
     @staticmethod
     def get_user_goals(user_id: int) -> List[dict]:
