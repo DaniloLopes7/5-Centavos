@@ -10,6 +10,24 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Danilo Almeida Lopes" }]
+dependencies = [
+    "fastapi==0.142.4",
+    "SQLAlchemy==2.0.52",
+    "psycopg2-binary==2.9.13",
+    "pydantic==2.13.5",
+    "pydantic-settings==2.15.0",
+    "python-dotenv==1.2.4",
+    "email-validator==2.3.0",
+    "bcrypt==5.0.0",
+    "python-jose[cryptography]==3.5.0",
+    "python-multipart==0.0.32",
+    "structlog==26.1.0",
+    "slowapi==0.1.10",
+    "pandas==3.0.5",
+    "numpy==2.5.3",
+    "scikit-learn==1.9.1",
+    "joblib==1.6.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
