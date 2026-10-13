@@ -21,5 +21,7 @@ addopts = "-v --tb=short"
 filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
 
 [tool.vercel]
+# Forçando atualização do deploy
 entrypoint = "src.cinco_centavos.api.main:app"
+
 
