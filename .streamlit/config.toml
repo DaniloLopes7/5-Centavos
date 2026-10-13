@@ -1,0 +1,20 @@
+# ============================================================
+# 5 CENTAVOS — Tema do dashboard Streamlit
+# Identidade: "Clareza que vale ouro" (mesma da landing page)
+# Cobertura complementar em dashboard/theme.py (CSS injetado).
+# ============================================================
+
+[theme]
+base = "light"
+primaryColor = "#F5A800"
+backgroundColor = "#FAF8F2"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1A1A1A"
+font = "sans serif"
+
+[server]
+headless = true
+runOnSave = false
+
+[browser]
+gatherUsageStats = false

@@ -1,21 +1,51 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+# Entrypoint do container. Modos: api | dashboard | etl
+set -euo pipefail
 
-echo "[Entrypoint] Iniciando 5 Centavos..."
+MODE="${1:-api}"
 
-# Aguardar PostgreSQL ficar disponível
-echo "[Entrypoint] Aguardando PostgreSQL..."
-until pg_isready -h postgres -U user -d five_centavos > /dev/null 2>&1; do
-    sleep 2
-done
-echo "[Entrypoint] PostgreSQL pronto!"
+# Espera o PostgreSQL ficar pronto (quando DATABASE_URL aponta para ele).
+if [[ "${DATABASE_URL:-}" == postgresql* ]]; then
+  echo "Aguardando PostgreSQL..."
+  python - <<'PY'
+import os, time
+from urllib.parse import urlparse
+import psycopg2
 
-# Executar ETL se solicitado (para inicializar banco)
-if [ "$RUN_ETL" = "true" ]; then
-    echo "[Entrypoint] Executando ETL..."
-    python3 src/etl/load_data.py
-    echo "[Entrypoint] ETL concluído!"
+url = urlparse(os.environ["DATABASE_URL"].replace("+psycopg2", ""))
+for attempt in range(30):
+    try:
+        psycopg2.connect(
+            host=url.hostname, port=url.port or 5432,
+            user=url.username, password=url.password,
+            dbname=url.path.lstrip("/"), connect_timeout=2,
+        ).close()
+        print("PostgreSQL disponível.")
+        break
+    except psycopg2.OperationalError:
+        time.sleep(2)
+else:
+    raise SystemExit("PostgreSQL não respondeu a tempo.")
+PY
 fi
 
-# Executar comando passado
-exec "$@"
+if [[ "${RUN_ETL:-false}" == "true" ]]; then
+  echo "Executando ETL de dados iniciais..."
+  python -m cinco_centavos.etl.load_data
+fi
+
+case "$MODE" in
+  api)
+    exec uvicorn cinco_centavos.api.main:app --host 0.0.0.0 --port "${API_PORT:-8000}"
+    ;;
+  dashboard)
+    exec streamlit run src/cinco_centavos/dashboard/app.py \
+      --server.port "${DASHBOARD_PORT:-8501}" --server.address 0.0.0.0
+    ;;
+  etl)
+    exec python -m cinco_centavos.etl.load_data
+    ;;
+  *)
+    exec "$@"
+    ;;
+esac

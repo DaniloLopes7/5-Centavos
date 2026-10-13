@@ -1,82 +1,69 @@
 services:
-  # Banco de dados PostgreSQL
-  postgres:
+  db:
     image: postgres:16-alpine
-    container_name: cinco-centavos-db
+    container_name: centavos_db
     environment:
-      POSTGRES_DB: five_centavos
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: user
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-five_centavos}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d five_centavos"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-five_centavos}"]
+      interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - cinco-centavos-network
+    restart: unless-stopped
 
-  # API FastAPI
   api:
     build: .
-    container_name: cinco-centavos-api
+    image: cinco-centavos:latest
+    container_name: centavos_api
+    command: ["api"]
     environment:
-      DATABASE_URL: postgresql://user:user@postgres:5432/five_centavos
-      API_BASE_URL: http://api:8000/api/v1
-      RUN_ETL: "true"
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-five_centavos}
+      SECRET_KEY: ${SECRET_KEY:-troque-esta-chave-por-uma-chave-segura-aleatoria}
+      APP_ENV: ${APP_ENV:-production}
+      RUN_ETL: ${RUN_ETL:-false}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8501,http://localhost:3000,http://localhost:8080,http://127.0.0.1:8080}
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./src:/app/src
-      - ./data:/app/data
-    networks:
-      - cinco-centavos-network
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
-  # Dashboard Streamlit
   dashboard:
-    build: .
-    container_name: cinco-centavos-dashboard
-    command: streamlit run src/dashboard/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    image: cinco-centavos:latest
+    container_name: centavos_dashboard
+    command: ["dashboard"]
     environment:
-      API_BASE_URL: http://api:8000/api/v1
+      API_URL: http://api:8000
+      LANDING_URL: ${LANDING_URL:-http://localhost:8080}
+    depends_on:
+      api:
+        condition: service_healthy
     ports:
       - "8501:8501"
-    depends_on:
-      - api
-    volumes:
-      - ./src:/app/src
-    networks:
-      - cinco-centavos-network
     restart: unless-stopped
 
-  # ETL Worker (opcional - para rodar manualmente se necessário)
   etl:
-    build: .
-    container_name: cinco-centavos-etl
+    image: cinco-centavos:latest
+    profiles: ["etl"]
+    container_name: centavos_etl
+    command: ["etl"]
     environment:
-      DATABASE_URL: postgresql://user:user@postgres:5432/five_centavos
-      RUN_ETL: "true"
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-five_centavos}
     depends_on:
-      postgres:
+      api:
         condition: service_healthy
-    volumes:
-      - ./src:/app/src
-      - ./data:/app/data
-    networks:
-      - cinco-centavos-network
-    profiles:
-      - etl
 
 volumes:
   postgres_data:
-
-networks:
-  cinco-centavos-network:
-    driver: bridge

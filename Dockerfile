@@ -1,43 +1,48 @@
-# Dockerfile para 5 Centavos
-FROM python:3.12-slim
+# syntax=docker/dockerfile:1
+
+# ---------------------------------------------------------------------------
+# Etapa 1 — builder: compila as dependências em um venv isolado
+# ---------------------------------------------------------------------------
+FROM python:3.12-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /build
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# ---------------------------------------------------------------------------
+# Etapa 2 — runtime: imagem enxuta, usuário não-root
+# ---------------------------------------------------------------------------
+FROM python:3.12-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    PYTHONPATH=/app/src
+
+RUN useradd --create-home --shell /bin/bash appuser
 
 WORKDIR /app
 
-# Instalar dependências do sistema (inclui postgresql-client para pg_isready)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libpq-dev \
-    libpq5 \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /opt/venv /opt/venv
+COPY src ./src
+COPY data ./data
+COPY .streamlit ./.streamlit
+COPY entrypoint.sh ./entrypoint.sh
 
-# Copiar requirements e instalar dependências Python globalmente
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN chmod +x entrypoint.sh && chown -R appuser:appuser /app
 
-# Copiar código da aplicação
-COPY . .
+USER appuser
 
-# Copiar entrypoint
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Criar usuário não-root e ajustar permissões
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
-USER app
-
-# Expor portas
 EXPOSE 8000 8501
 
-# Variáveis de ambiente
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    API_BASE_URL=http://api:8000/api/v1 \
-    RUN_ETL=false
-
-# Entrypoint que aguarda PostgreSQL e roda ETL opcional
-ENTRYPOINT ["/entrypoint.sh"]
-
-# Comando padrão (API)
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["api"]

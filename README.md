@@ -1,299 +1,203 @@
-# 5 Centavos
+# 5 Centavos 🪙
 
-Plataforma de gerenciamento financeiro pessoal com foco em **Ciência de Dados, Analytics e Inteligência Artificial**.
+Plataforma de gestão financeira pessoal com foco em **Ciência de Dados, Analytics e Inteligência Artificial**.
 
 ## Sobre o projeto
 
-O **5 Centavos** é uma ferramenta para organizar finanças pessoais, registrar receitas e despesas, acompanhar saldos e transformar esses dados em informações para tomada de decisão.
+O **5 Centavos** organiza finanças pessoais: registre receitas e despesas, gerencie contas e metas, e transforme os dados em indicadores, previsões e insights acionáveis gerados por IA.
 
-O objetivo é aplicar conceitos de **Programação, Banco de Dados, Engenharia de Dados, Analytics e IA** de forma prática.
+Arquitetura em camadas, testável e pronta para deploy via Docker:
 
-## Objetivos
-
-* Organizar receitas e despesas;
-* Gerenciar contas financeiras;
-* Acompanhar saldos;
-* Categorizar transações;
-* Gerar relatórios e indicadores;
-* Analisar dados financeiros;
-* Criar visualizações;
-* Desenvolver processos de ETL;
-* Aplicar Inteligência Artificial;
-* Construir uma aplicação organizada e testável.
+```text
+Landing page (HTML/CSS/JS) → Dashboard (Streamlit) → API REST (FastAPI) → Services → Repositories → PostgreSQL
+                                                                  ↘ Analytics & IA (Scikit-learn)
+```
 
 ## Tecnologias
 
-As tecnologias são adicionadas conforme a evolução do projeto.
-
-| Tecnologia   | Utilização                     |
-| ------------ | ------------------------------ |
-| Python       | Linguagem principal            |
-| PostgreSQL   | Banco de dados principal       |
-| SQLAlchemy   | ORM                            |
-| FastAPI      | Desenvolvimento da API REST    |
-| Pandas       | Manipulação e análise de dados |
-| NumPy        | Computação numérica            |
-| Plotly       | Visualização de dados          |
-| Streamlit    | Dashboard interativo           |
-| Scikit-learn | Machine Learning               |
-| Pytest       | Testes automatizados           |
-| Docker       | Containerização                |
-| python-jose  | Autenticação JWT               |
-
-## Evolução do projeto
-
-Desenvolvimento através de versões incrementais.
-
-| Versão | Etapa                       | Status       |
-| ------ | --------------------------- | ------------ |
-| v0.1.0 | Planejamento e documentação | ✅ Finalizado |
-| v0.2.0 | Estrutura inicial em Python | ✅ Finalizado |
-| v0.3.0 | Sistema financeiro + SQLite | ✅ Finalizado |
-| v0.4.0 | PostgreSQL + arquitetura    | ✅ Finalizado |
-| v0.5.0 | API com FastAPI             | ✅ Finalizado |
-| v0.6.0 | Analytics                   | ✅ Finalizado |
-| v0.7.0 | Dashboard (Streamlit)       | ✅ Finalizado |
-| v0.8.0 | Inteligência Artificial     | ✅ Finalizado |
-| v1.0.0 | Docker + Deploy             | ✅ Finalizado |
-
-> Cada versão é um marco funcional registrado via Git.
-
-## Estrutura do projeto
-
-```text
-5-Centavos/
-│
-├── docs/
-│   ├── especificacao.md
-│   ├── requisitos.md
-│   ├── regras-de-negocio.md
-│   ├── casos-de-uso.md
-│   ├── arquitetura.md
-│   ├── modelo-de-dados.md
-│   ├── DER.md
-│   └── roadmap.md
-│
-├── src/
-│   ├── api/
-│   │   ├── main.py
-│   │   └── v1/
-│   │       ├── endpoints/
-│   │       │   ├── auth.py
-│   │       │   ├── users.py
-│   │       │   ├── transactions.py
-│   │       │   ├── goals.py
-│   │       │   ├── analytics.py
-│   │       │   └── ai.py
-│   │       ├── deps.py
-│   │       └── router.py
-│   ├── dashboard/
-│   │   └── app.py
-│   ├── ai/
-│   │   └── __init__.py
-│   ├── analytics/
-│   ├── services/
-│   ├── repositories/
-│   ├── schemas/
-│   ├── etl/
-│   └── cinco_centavos/
-│       ├── main.py
-│       └── database.py
-│
-├── tests/
-├── data/
-│
-├── Dockerfile
-├── docker-compose.yml
-├── Makefile
-├── requirements.txt
-├── .dockerignore
-├── .env.example
-├── README.md
-└── LICENSE
-```
+| Tecnologia     | Utilização                          |
+| -------------- | ----------------------------------- |
+| Python 3.11+   | Linguagem principal                 |
+| PostgreSQL 16  | Banco de dados principal            |
+| SQLAlchemy 2.0 | ORM (modelos declarativos)          |
+| FastAPI        | API REST + OpenAPI/Swagger          |
+| Pydantic v2    | Validação de contratos              |
+| python-jose + bcrypt | JWT e hash de senhas           |
+| Scikit-learn   | Machine Learning (5 modelos)        |
+| Pandas/NumPy   | Manipulação e análise de dados      |
+| Streamlit      | Dashboard interativo                |
+| Plotly         | Visualizações                       |
+| structlog      | Logging estruturado                 |
+| slowapi        | Rate limiting                       |
+| Pytest/httpx   | Testes automatizados                |
+| Docker         | Containerização                     |
 
 ## Funcionalidades
 
 ### 🔐 Autenticação
-- Registro de usuários com hash de senha (bcrypt)
-- Login com JWT (JSON Web Tokens)
-- Proteção de rotas com dependências FastAPI
+- **A landing page é a porta de entrada única** (`landing/`): cadastro ou login nela fazem auto-login e redirecionam ao dashboard em `:8501` com o token JWT
+- Registro com hash bcrypt e categorias padrão automáticas
+- Login com JWT; isolamento total de dados por usuário
+
+### 🎨 Design System ("Clareza que vale ouro")
+- Landing de conversão (12 seções) e dashboard Streamlit compartilham a mesma identidade: branco/off-white + amarelo #FFC72C + grafite, Plus Jakarta Sans/Inter, bordas grandes e sombras quentes
+- Tema do Streamlit: `.streamlit/config.toml` + CSS injetado por `dashboard/theme.py` — aplicado a todas as páginas do painel
 
 ### 🏦 Gestão Financeira
-- **Contas**: Múltiplas contas por usuário (Corrente, Poupança, Investimento, Espécie, Cartão)
-- **Transações**: Receitas e despesas com descrição, valor, data, categoria
-- **Categorias**: Personalizáveis por usuário (Receita/Despesa)
-- **Metas**: Objetivos financeiros com acompanhamento de progresso
+- **Contas**: CRUD completo com saldo calculado (inicial + receitas − despesas)
+- **Transações**: receitas/despesas com validações de valor, data e tipo
+- **Categorias**: personalizáveis por usuário; unicidade nome+tipo
+- **Metas**: objetivos financeiros com progresso incremental
 
 ### 📊 Analytics & Visualização
-- Resumo financeiro (receitas, despesas, saldo, taxa de poupança)
-- Gastos por categoria (gráficos de pizza e barras)
-- Evolução mensal (receitas vs despesas vs saldo)
-- Taxa de poupança automática
+- Resumo financeiro com taxa de poupança
+- Totais por categoria (com percentuais) e evolução mensal
+- Dashboard Streamlit com gráficos Plotly (pizza e linhas)
 
 ### 🤖 Inteligência Artificial
-- **Classificador de transações**: Prediz categoria baseada na descrição
-- **Detecção de anomalias**: Identifica gastos incomuns (Isolation Forest)
-- **Previsão de fluxo de caixa**: Projeção de receitas/despesas futuras
-- **Insights personalizados**: Sugestões baseadas em padrões de gasto
-- **Perfil de gasto**: Clustering de comportamento financeiro
+- **Classificador de transações**: TF-IDF + RandomForest
+- **Detecção de anomalias**: Isolation Forest
+- **Previsão de fluxo de caixa**: médias móveis
+- **Perfil de consumo**: K-Means
+- **Insights transparentes**: FinancialAdvisor explica os fatores de cada análise
+- Mínimo de 8 transações do usuário para treinar os modelos
 
 ### 🐳 Docker & Deploy
-- Multi-stage Dockerfile otimizado
-- docker-compose com PostgreSQL, API, Dashboard
-- Makefile para comandos de desenvolvimento
-- Health checks e restart policies
-
-## Conceitos aplicados
-
-* Python & POO
-* SQL e Bancos de Dados (PostgreSQL)
-* APIs REST (FastAPI)
-* Arquitetura de software (Clean Architecture)
-* Engenharia de Dados e ETL
-* Análise Exploratória de Dados
-* Estatística e Visualização (Plotly/Streamlit)
-* Machine Learning (Scikit-learn)
-* Testes automatizados (Pytest)
-* Git, Docker e CI/CD
+- Multi-stage build, usuário não-root, health checks
+- docker-compose: PostgreSQL + API + Dashboard (+ ETL opcional)
+- Makefile, `.env` e entrypoint por modo (`api`/`dashboard`/`etl`)
 
 ## Como executar
 
 ### Pré-requisitos
-- Python 3.11+
-- PostgreSQL 16+
-- Docker & Docker Compose (opcional)
+- Docker & Docker Compose **ou** Python 3.11+ (dev local usa SQLite, sem servidor de banco)
 
-### Opção 1: Docker (Recomendado)
+### Opção 1 — Docker (recomendado)
 
 ```bash
-# Clonar repositório
-git clone <repo-url>
-cd 5-Centavos
+cp .env.example .env   # ajuste SECRET_KEY e credenciais
 
-# Configurar variáveis de ambiente
-cp .env.example .env
-# Editar .env com suas configurações
+docker compose up -d --build
 
-# Iniciar todos os serviços
-docker-compose up -d
+# ETL de dados de exemplo (opcional)
+docker compose --profile etl run --rm etl
+# ou configure RUN_ETL=true no .env antes de subir
 
-# Acessar:
-# API: http://localhost:8000
-# Docs: http://localhost:8000/docs
-# Dashboard: http://localhost:8501
+# Acessos:
+#   Landing:   http://localhost:8080   →  python3 -m http.server 8080 --directory landing
+#   API/REST:  http://localhost:8000/docs
+#   Dashboard: http://localhost:8501   (entrar/cadastrar pela landing — ela redireciona)
 ```
 
-### Opção 2: Desenvolvimento Local
+### Opção 2 — Local
 
 ```bash
-# Criar ambiente virtual
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Instalar dependências
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+# Opcional: cp .env.example .env (o padrão já é SQLite em data/five_centavos.db)
 
-# Configurar banco PostgreSQL
-# Criar database 'five_centavos' e usuário 'user'
-
-# Configurar .env
-cp .env.example .env
-# Editar DATABASE_URL
-
-# Executar ETL (cria tabelas e carrega dados)
-python src/etl/load_data.py
-
-# Iniciar API
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
-
-# Em outro terminal, iniciar Dashboard
-streamlit run src/dashboard/app.py --server.port 8501
+PYTHONPATH=src python -m cinco_centavos.etl.load_data        # seed inicial (opcional)
+PYTHONPATH=src uvicorn cinco_centavos.api.main:app --reload  # API em :8000
+PYTHONPATH=src streamlit run src/cinco_centavos/dashboard/app.py  # Dashboard :8501
 ```
 
-### Usando Makefile
+> Para usar PostgreSQL no dev local, suba apenas o banco com
+> `docker compose up -d db` (exposto na porta **5433** do host) e configure
+> `DATABASE_URL=postgresql+psycopg2://user:password@localhost:5433/five_centavos`.
+
+### Makefile
 
 ```bash
-make install      # Cria venv e instala dependências
-make test         # Executa testes
-make run-api      # Inicia API
-make run-dashboard # Inicia Dashboard
-make run-etl      # Executa ETL
-make docker-up    # Inicia containers
-make docker-down  # Para containers
+make install        # venv + dependências
+make run-etl        # carga dos CSVs em data/
+make run-api        # API com reload
+make run-dashboard  # Streamlit
+make test           # suíte completa (unit + integration + e2e)
+make docker-up      # containers
 ```
 
 ## Endpoints da API
 
 ### Autenticação
-- `POST /api/v1/auth/register` - Registrar usuário
-- `POST /api/v1/auth/login` - Login (retorna JWT)
-- `GET /api/v1/auth/me` - Usuário atual
+- `POST /api/v1/auth/register` — registrar usuário
+- `POST /api/v1/auth/login` — login (JWT)
+- `GET /api/v1/auth/me` — usuário autenticado
 
-### Contas
-- `GET /api/v1/users/me/accounts` - Listar contas
-- `POST /api/v1/users/me/accounts` - Criar conta
-- `GET /api/v1/users/me/accounts/{id}` - Obter conta
-- `PUT /api/v1/users/me/accounts/{id}` - Atualizar conta
-- `DELETE /api/v1/users/me/accounts/{id}` - Remover conta
+### Contas (`/api/v1/users/me/accounts`)
+- `GET` listar com saldo · `POST` criar · `GET/PUT/DELETE /{id}`
 
-### Categorias
-- `GET /api/v1/users/me/categories` - Listar categorias
-- `POST /api/v1/users/me/categories` - Criar categoria
-- `PUT /api/v1/users/me/categories/{id}` - Atualizar
-- `DELETE /api/v1/users/me/categories/{id}` - Remover
+### Categorias (`/api/v1/users/me/categories`)
+- `GET` listar (filtro `type`) · `POST` criar · `PUT/DELETE /{id}`
 
-### Transações
-- `GET /api/v1/transactions` - Listar transações
-- `POST /api/v1/transactions` - Criar transação
-- `GET /api/v1/transactions/{id}` - Obter transação
-- `PUT /api/v1/transactions/{id}` - Atualizar
-- `DELETE /api/v1/transactions/{id}` - Remover
+### Transações (`/api/v1/transactions`)
+- `GET` listar (filtros `account_id`, `type`, `start_date`, `end_date`)
+- `POST` criar · `GET/PUT/DELETE /{id}`
 
-### Metas
-- `GET /api/v1/goals` - Listar metas
-- `POST /api/v1/goals` - Criar meta
-- `POST /api/v1/goals/{id}/progress` - Adicionar progresso
+### Metas (`/api/v1/goals`)
+- `GET` listar · `POST` criar · `GET/PUT/DELETE /{id}` · `POST /{id}/progress`
 
-### Analytics
-- `GET /api/v1/analytics/summary` - Resumo financeiro
-- `GET /api/v1/analytics/categories` - Por categoria
-- `GET /api/v1/analytics/monthly` - Mensal
+### Analytics (`/api/v1/analytics`)
+- `GET /summary` — resumo consolidado
+- `GET /categories` — totais por categoria
+- `GET /monthly` — evolução mensal
 
-### Inteligência Artificial
-- `POST /api/v1/ai/train` - Treinar modelos
-- `POST /api/v1/ai/predict-category` - Predizer categoria
-- `GET /api/v1/ai/insights` - Insights + previsões + anomalias
-- `GET /api/v1/ai/cashflow-prediction` - Previsão fluxo de caixa
-- `GET /api/v1/ai/anomalies` - Transações anômalas
+### IA (`/api/v1/ai`)
+- `POST /train` — treina os modelos com seus dados
+- `POST /predict-category` — prediz categoria de uma descrição
+- `GET /insights` — insights + perfil + previsão
+- `GET /cashflow-prediction` — previsão de fluxo de caixa
+- `GET /anomalies` — gastos fora do padrão
+
+### Infra
+- `GET /health` — health check
 
 ## Testes
 
 ```bash
-# Executar todos os testes
-make test
+make test                 # 41 testes: unit, integration, e2e
+make test-unit            # apenas serviços/IA
+make test-integration     # API e jornadas e2e
+```
 
-# Ou diretamente
-pytest tests/ -v
+Os testes usam SQLite em memória isolado por teste — nenhum serviço externo é necessário.
+
+## Estrutura
+
+```text
+5-Centavos/
+├── landing/           # Landing page + cadastro/login (HTML, CSS, JS puros — porta de entrada)
+├── .streamlit/        # Tema do dashboard (config.toml)
+├── src/cinco_centavos/
+│   ├── core/          # config, database (SQLAlchemy), security (bcrypt+JWT), logging
+│   ├── models/        # ORM: User, Account, Category, Transaction, Goal + enums
+│   ├── schemas/       # contratos Pydantic v2 por domínio
+│   ├── repositories/  # acesso a dados com isolamento por usuário
+│   ├── services/      # regras de negócio + exceções de domínio
+│   ├── api/           # FastAPI: main, rate limit, v1 (deps/router/endpoints por domínio)
+│   ├── ai/            # 5 modelos de IA + FinancialAdvisor
+│   ├── etl/           # importação CSV idempotente com validação
+│   └── dashboard/     # Streamlit: app, theme (design system), api_client, components, views/
+├── tests/             # unit / integration / e2e
+├── data/              # CSVs seed
+├── docs/              # especificação, requisitos, RN, CU, arquitetura, modelo, DER, roadmap
+├── Dockerfile / docker-compose.yml / Makefile / entrypoint.sh
+└── pyproject.toml / requirements.txt
 ```
 
 ## Documentação
 
 - [Especificação](docs/especificacao.md)
 - [Requisitos](docs/requisitos.md)
-- [Arquitetura](docs/arquitetura.md)
-- [Modelo de Dados](docs/modelo-de-dados.md)
-- [DER](docs/DER.md)
 - [Regras de Negócio](docs/regras-de-negocio.md)
 - [Casos de Uso](docs/casos-de-uso.md)
-- [Roadmap](docs/roadmap.md)
+- [Arquitetura](docs/arquitetura.md)
+- [Modelo de Dados](docs/modelo-de-dados.md) · [DER](docs/DER.md)
+- [Roadmap](docs/roadmap.md) · [CHANGELOG](CHANGELOG.md)
 
 ## Autor
 
-**Danilo Almeida Lopes**
-
-Estudante de **Ciência de Dados**, interessado em Analytics, Engenharia de Dados e IA.
+**Danilo Almeida Lopes** — estudante de Ciência de Dados.
 
 ## Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
+MIT — veja [LICENSE](LICENSE).

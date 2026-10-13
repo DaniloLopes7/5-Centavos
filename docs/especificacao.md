@@ -5,11 +5,11 @@
 **Nome do projeto:** 5 Centavos
 **Tipo:** Gestão financeira pessoal
 **Área:** Ciência de Dados, Analytics e IA
-**Versão:** 0.3.0
+**Versão:** 1.1.0
 
 ## 2. Visão geral
 
-O **5 Centavos** serve para organizar finanças pessoais. O sistema permite registrar receitas, despesas e organizar dados para gerar indicadores e análises futuras, incluindo recursos de IA.
+O **5 Centavos** serve para organizar finanças pessoais. O sistema permite registrar receitas, despesas e organizar dados para gerar indicadores e análises, incluindo recursos de IA.
 
 O desenvolvimento é incremental, com versões funcionais para acompanhar a evolução técnica.
 
@@ -40,24 +40,28 @@ Pessoas que querem organizar suas finanças e entender seus hábitos através de
 ## 7. Escopo
 
 ### 7.1 No escopo
+
 * Cadastro, autenticação e gestão de contas;
 * Receitas, despesas e categorias;
 * Saldo e histórico de transações;
 * Relatórios, indicadores, Analytics e Dashboard;
-* Importação/Exportação de dados e metas financeiras;
+* Importação de dados (ETL/CSV) e metas financeiras;
 * IA, Testes, Docker e Deploy.
 
 ### 7.2 Fora do escopo
+
 * Operações bancárias reais ou transferências;
-* Acesso direto a APIs bancárias;
-* Consultoria financeira profissional.
+* Acesso direto a APIs bancárias (Open Finance);
+* Consultoria financeira profissional — sugestões da IA são apenas indicativas.
 
 ## 8. Arquitetura prevista
 
-A arquitetura evolui com as versões:
+A arquitetura segue camadas desacopladas:
 
 ```text
-Usuário -> Interface/Dashboard -> API -> Serviços -> Banco de Dados -> Analytics/IA
+Usuário -> Dashboard (Streamlit) -> API REST (FastAPI) -> Services -> Repositories -> PostgreSQL
+                                                  ↓
+                                          Analytics & IA (Scikit-learn)
 ```
 
 ## 9. Entidades principais
@@ -70,22 +74,23 @@ Usuário -> Interface/Dashboard -> API -> Serviços -> Banco de Dados -> Analyti
 
 ## 10. Tecnologias
 
-* Python, SQLite, PostgreSQL, SQLAlchemy, FastAPI, Pandas, NumPy, Plotly, Streamlit, Scikit-learn, Pytest, Docker.
+* Python 3.11+, PostgreSQL 16, SQLAlchemy 2.0 (ORM), FastAPI, Pydantic v2, Pandas, NumPy, Plotly, Streamlit, Scikit-learn, HTTPX, Pytest, Docker.
 
 ## 11. Evolução do projeto
 
-| Versão | Objetivo                    |
-| ------ | --------------------------- |
-| v0.1.0 | Planejamento e documentação |
-| v0.2.0 | Estrutura inicial em Python |
-| v0.3.0 | Sistema financeiro + SQLite |
-| v0.4.0 | PostgreSQL + arquitetura    |
-| v0.5.0 | API                         |
-| v0.6.0 | Analytics                   |
-| v0.7.0 | Dashboard                   |
-| v0.8.0 | Inteligência Artificial     |
-| v1.0.0 | Docker + Deploy             |
+| Versão | Objetivo                        |
+| ------ | ------------------------------- |
+| v0.1.0 | Planejamento e documentação     |
+| v0.2.0 | Estrutura inicial em Python     |
+| v0.3.0 | Sistema financeiro + SQLite     |
+| v0.4.0 | PostgreSQL + arquitetura        |
+| v0.5.0 | API                             |
+| v0.6.0 | Analytics                       |
+| v0.7.0 | Dashboard                       |
+| v0.8.0 | Inteligência Artificial         |
+| v1.0.0 | Docker + Deploy                 |
+| v1.1.0 | Reescrita profissional completa |
 
 ## 12. Sucesso do projeto
 
-Cada versão deve cumprir seus objetivos funcionais, ter documentação atualizada e código versionado. O resultado final deve integrar todas as camadas (Financeiro -> Banco -> API -> Analytics -> Dashboard -> IA -> Deploy).
+Cada versão deve cumprir seus objetivos funcionais, ter documentação atualizada e código versionado. O resultado final integra todas as camadas (Financeiro → Banco → API → Analytics → Dashboard → IA → Deploy) com suíte de testes automatizados passando.

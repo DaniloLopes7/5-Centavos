@@ -1,6 +1,5 @@
-id,user_id,name,type
-1,1,Alimentação,DESPESA
-2,1,Transporte,DESPESA
-3,1,Salário,RECEITA
-4,2,Alimentação,DESPESA
-5,2,Freelance,RECEITA
+user_email,name,type
+danilo@example.com,Assinaturas,DESPESA
+danilo@example.com,Bônus,RECEITA
+ana@example.com,Alimentação,DESPESA
+ana@example.com,Salário,RECEITA

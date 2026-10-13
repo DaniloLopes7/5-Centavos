@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5 Centavos — Saiba para onde vai cada real. E faça sobrar mais.</title>
+  <meta name="description" content="Registre receitas e despesas, defina metas e receba insights de inteligência artificial. Controle financeiro simples e 100% grátis." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FFC72C'/><text x='50' y='66' font-size='52' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%231A1A1A'>5</text></svg>" />
+</head>
+<body>
+
+  <!-- ============ 1. NAVEGAÇÃO ============ -->
+  <header class="nav" id="topo">
+    <div class="container nav__inner">
+      <a href="#topo" class="nav__logo" aria-label="5 Centavos - início">
+        <i class="ph-duotone ph-coins" aria-hidden="true"></i>
+        <span>5 Centavos</span>
+      </a>
+
+      <nav class="nav__links" id="nav-links" aria-label="Navegação principal">
+        <a href="#recursos">Recursos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#depoimentos">Depoimentos</a>
+        <a href="#gratis">Grátis</a>
+      </nav>
+
+      <div class="nav__actions">
+        <a href="#cadastro" class="nav__login">Entrar</a>
+        <a href="#cadastro" class="btn btn--primary btn--nav">Criar conta grátis</a>
+        <button class="nav__toggle" id="nav-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-links">
+          <i class="ph ph-list" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ 2. HERO ============ -->
+    <section class="hero" id="cadastro">
+      <div class="hero__blob hero__blob--1" aria-hidden="true"></div>
+      <div class="hero__blob hero__blob--2" aria-hidden="true"></div>
+      <div class="hero__rings" aria-hidden="true"></div>
+
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <h1 class="hero__title">
+            Saiba para onde vai <span class="highlight">cada real</span>. E faça <span class="highlight">sobrar mais</span>.
+          </h1>
+          <p class="hero__subtitle">
+            Registre receitas e despesas, defina metas e receba insights de inteligência artificial — simples, bonito e 100% grátis.
+          </p>
+
+          <form class="signup" id="signup-form" novalidate>
+            <div class="signup__mode" role="tablist" aria-label="Cadastro ou entrar">
+              <button type="button" class="signup__mode-btn is-active" id="mode-signup" data-mode="signup" role="tab" aria-selected="true">Criar conta</button>
+              <button type="button" class="signup__mode-btn" id="mode-login" data-mode="login" role="tab" aria-selected="false">Entrar</button>
+            </div>
+
+            <div class="signup__fields">
+              <div class="field">
+                <label class="sr-only" for="email">Seu e-mail</label>
+                <input type="email" id="email" name="email" placeholder="Seu e-mail" autocomplete="email" required />
+                <span class="field__error" id="email-error" role="alert"></span>
+              </div>
+              <div class="field">
+                <label class="sr-only" for="password">Sua senha</label>
+                <input type="password" id="password" name="password" placeholder="Crie uma senha (mín. 6 caracteres)" autocomplete="new-password" minlength="6" required />
+                <span class="field__error" id="password-error" role="alert"></span>
+              </div>
+              <button type="submit" class="btn btn--primary btn--xl" id="signup-submit">
+                <span class="btn__label">Começar grátis</span>
+              </button>
+            </div>
+
+            <button type="button" class="signup__google" id="google-btn">
+              <i class="ph ph-google-logo" aria-hidden="true"></i>
+              Continuar com Google
+            </button>
+
+            <p class="signup__microcopy" id="signup-microcopy">Sem cartão de crédito · Leva 30 segundos</p>
+            <div class="signup__message" id="signup-message" role="status" aria-live="polite"></div>
+          </form>
+
+          <div class="hero__security">
+            <i class="ph-duotone ph-lock" aria-hidden="true"></i>
+            <span>Seus dados são criptografados de ponta a ponta</span>
+          </div>
+
+          <div class="hero__social">
+            <div class="hero__avatars" aria-hidden="true">
+              <img src="https://i.pravatar.cc/64?img=5" alt="" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback\'>AC</span>'" />
+              <img src="https://i.pravatar.cc/64?img=12" alt="" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback\'>RM</span>'" />
+              <img src="https://i.pravatar.cc/64?img=32" alt="" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback\'>JP</span>'" />
+              <img src="https://i.pravatar.cc/64?img=47" alt="" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback\'>PH</span>'" />
+            </div>
+            <div class="hero__social-text">
+              <div class="hero__stars" aria-label="Avaliação 5 de 5">
+                <i class="ph-fill ph-star" aria-hidden="true"></i>
+                <i class="ph-fill ph-star" aria-hidden="true"></i>
+                <i class="ph-fill ph-star" aria-hidden="true"></i>
+                <i class="ph-fill ph-star" aria-hidden="true"></i>
+                <i class="ph-fill ph-star" aria-hidden="true"></i>
+              </div>
+              <p><strong>+<span data-count="10">0</span> mil pessoas</strong> já controlam seus gastos</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mockup do dashboard -->
+        <div class="hero__visual" aria-label="Prévia do painel 5 Centavos">
+          <div class="dash-mock" data-parallax-parent>
+            <div class="dash-mock__main">
+              <div class="dash-mock__header">
+                <div>
+                  <p class="dash-mock__hello">Bom dia, Marina</p>
+                  <h3 class="dash-mock__balance">R$ <span class="num">3.482</span><span class="num">,50</span></h3>
+                  <p class="dash-mock__caption">Saldo consolidado de 3 contas</p>
+                </div>
+                <button class="btn btn--primary btn--sm" type="button" tabindex="-1">+ Adicionar gasto</button>
+              </div>
+              <div class="dash-mock__bars" aria-hidden="true">
+                <div class="bar" style="--h: 42%"></div>
+                <div class="bar" style="--h: 65%"></div>
+                <div class="bar" style="--h: 38%"></div>
+                <div class="bar" style="--h: 80%"></div>
+                <div class="bar" style="--h: 55%"></div>
+                <div class="bar bar--active" style="--h: 92%"></div>
+                <div class="bar" style="--h: 60%"></div>
+              </div>
+              <div class="dash-mock__row">
+                <span class="tag tag--green"><i class="ph-fill ph-trend-up" aria-hidden="true"></i> Receita: R$ 6.200</span>
+                <span class="tag tag--coral"><i class="ph-fill ph-trend-down" aria-hidden="true"></i> Despesa: R$ 2.718</span>
+              </div>
+            </div>
+
+            <div class="glass-card glass-card--savings" data-parallax="1">
+              <i class="ph-duotone ph-piggy-bank" aria-hidden="true"></i>
+              <div>
+                <p class="glass-card__value num">Você economizou <strong>R$ 480</strong> este mês</p>
+                <p class="glass-card__caption">12% a mais que o mês passado</p>
+              </div>
+            </div>
+
+            <div class="glass-card glass-card--chart" data-parallax="2">
+              <div class="pie" aria-hidden="true"></div>
+              <div>
+                <p class="glass-card__value">Gastos por categoria</p>
+                <p class="glass-card__caption">Mercado lidera com 34%</p>
+              </div>
+            </div>
+
+            <div class="glass-card glass-card--goal" data-parallax="3">
+              <p class="glass-card__value">Meta: Viagem ao Ceará</p>
+              <div class="progress" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso da meta: 68%">
+                <div class="progress__fill" style="width: 68%"></div>
+              </div>
+              <p class="glass-card__caption">R$ 2.720 de R$ 4.000 · faltam 2 meses</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. FAIXA DE CONFIANÇA ============ -->
+    <section class="trustbar" aria-label="Selos de confiança">
+      <div class="container">
+        <div class="trustbar__seals">
+          <span><i class="ph-duotone ph-shield-check" aria-hidden="true"></i> Dados em conformidade com a LGPD</span>
+          <span><i class="ph-duotone ph-lock-key" aria-hidden="true"></i> Senhas com criptografia bcrypt</span>
+          <span><i class="ph-duotone ph-file-arrow-down" aria-hidden="true"></i> Seus dados são seus: exporte quando quiser</span>
+        </div>
+        <div class="trustbar__press" aria-label="Na mídia">
+          <span class="press-logo">TECH·DIA</span>
+          <span class="press-logo">FINTECH+</span>
+          <span class="press-logo">ECONOMIA⚡JÁ</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4. PROBLEMA E SOLUÇÃO ============ -->
+    <section class="section problem">
+      <div class="container">
+        <h2 class="section__title reveal">Chega de adivinhar <span class="highlight">para onde foi o dinheiro</span></h2>
+        <div class="problem__grid">
+          <div class="problem__col problem__col--before reveal">
+            <div class="problem__header">
+              <i class="ph-duotone ph-file-x" aria-hidden="true"></i>
+              <h3>Antes</h3>
+            </div>
+            <ul>
+              <li>Planilha bagunçada que ninguém entende</li>
+              <li>Gastos pequenos sumindo sem você ver</li>
+              <li>Medo de abrir a conta no fim do mês</li>
+              <li>Metas que nunca saem do papel</li>
+            </ul>
+            <div class="problem__sheet" aria-hidden="true">
+              <div class="sheet-row"><span>gasto?</span><span>-47,90</span></div>
+              <div class="sheet-row"><span>PIX amigo</span><span>-120</span></div>
+              <div class="sheet-row"><span>assinatura ??</span><span>-39,99</span></div>
+              <div class="sheet-row"><span>supermercado</span><span>-812,40</span></div>
+            </div>
+          </div>
+          <div class="problem__col problem__col--after reveal">
+            <div class="problem__header">
+              <i class="ph-duotone ph-chart-line-up" aria-hidden="true"></i>
+              <h3>Depois</h3>
+            </div>
+            <ul>
+              <li>Tudo <strong>categorizado automaticamente</strong> por IA</li>
+              <li>Visão clara de cada centavo, por categoria</li>
+              <li>Alertas quando um gasto sai do seu padrão</li>
+              <li>Metas com barra de progresso em tempo real</li>
+            </ul>
+            <div class="problem__panel" aria-hidden="true">
+              <div class="panel-row"><span class="dot dot--yellow"></span> Mercado <strong class="num">R$ 812</strong></div>
+              <div class="panel-row"><span class="dot dot--green"></span> Transporte <strong class="num">R$ 240</strong></div>
+              <div class="panel-row"><span class="dot dot--purple"></span> Lazer <strong class="num">R$ 180</strong></div>
+              <div class="panel-row"><span class="dot dot--orange"></span> Moradia <strong class="num">R$ 1.350</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5. RECURSOS (BENTO GRID) ============ -->
+    <section class="section features" id="recursos">
+      <div class="container">
+        <p class="section__eyebrow reveal">Recursos</p>
+        <h2 class="section__title reveal">Tudo que você precisa. Nada que atrapalhe.</h2>
+
+        <div class="bento">
+          <article class="bento__card bento__card--wide reveal">
+            <div class="bento__icon"><i class="ph-duotone ph-robot" aria-hidden="true"></i></div>
+            <h3>Categorização automática com IA</h3>
+            <p>Nossa inteligência artificial aprende com seus hábitos e classifica cada gasto sozinha — mercado, transporte, lazer e mais.</p>
+            <div class="bento__demo bento__demo--tags" aria-hidden="true">
+              <span class="mini-tag"><span class="dot dot--yellow"></span> Mercado</span>
+              <span class="mini-tag"><span class="dot dot--green"></span> Transporte</span>
+              <span class="mini-tag"><span class="dot dot--purple"></span> Lazer</span>
+            </div>
+          </article>
+
+          <article class="bento__card reveal">
+            <div class="bento__icon"><i class="ph-duotone ph-target" aria-hidden="true"></i></div>
+            <h3>Metas e orçamentos</h3>
+            <p>Defina objetivos e acompanhe o progresso de cada real guardado.</p>
+          </article>
+
+          <article class="bento__card reveal">
+            <div class="bento__icon"><i class="ph-duotone ph-chart-pie-slice" aria-hidden="true"></i></div>
+            <h3>Relatórios visuais</h3>
+            <p>Gráficos por categoria e evolução mensal, direto ao ponto.</p>
+          </article>
+
+          <article class="bento__card reveal">
+            <div class="bento__icon"><i class="ph-duotone ph-bell-ringing" aria-hidden="true"></i></div>
+            <h3>Alertas inteligentes</h3>
+            <p>A IA detecta gastos fora do seu padrão e te avisa na hora.</p>
+          </article>
+
+          <article class="bento__card reveal">
+            <div class="bento__icon"><i class="ph-duotone ph-bank" aria-hidden="true"></i></div>
+            <h3>Múltiplas contas</h3>
+            <p>Conta corrente, poupança, carteira e cartões em um painel só.</p>
+          </article>
+
+          <article class="bento__card bento__card--wide reveal">
+            <div class="bento__icon"><i class="ph-duotone ph-file-arrow-down" aria-hidden="true"></i></div>
+            <h3>Exportação de dados</h3>
+            <p>Seus dados pertencem a você. Exporte tudo em CSV a qualquer momento.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6. DEMO DO PRODUTO ============ -->
+    <section class="section demo">
+      <div class="container">
+        <p class="section__eyebrow reveal">Veja em ação</p>
+        <h2 class="section__title reveal">Um painel que você entende em 5 segundos</h2>
+
+        <div class="demo__tabs reveal" role="tablist" aria-label="Demonstração do produto">
+          <button class="demo__tab is-active" role="tab" aria-selected="true" data-tab="resumo">Resumo</button>
+          <button class="demo__tab" role="tab" aria-selected="false" data-tab="categorias">Categorias</button>
+          <button class="demo__tab" role="tab" aria-selected="false" data-tab="insights">Insights de IA</button>
+        </div>
+
+        <div class="demo__panel reveal" id="demo-resumo" data-panel="resumo">
+          <div class="demo__stats">
+            <div class="stat">
+              <p class="stat__label">Receitas do mês</p>
+              <p class="stat__value stat__value--green num">R$ 6.250,00</p>
+            </div>
+            <div class="stat">
+              <p class="stat__label">Despesas do mês</p>
+              <p class="stat__value stat__value--coral num">R$ 3.914,30</p>
+            </div>
+            <div class="stat">
+              <p class="stat__label">Taxa de poupança</p>
+              <p class="stat__value num">37,4%</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo__panel" id="demo-categorias" data-panel="categorias" hidden>
+          <ul class="demo__cat-list">
+            <li><span class="cat-dot cat-dot--market"></span> Mercado <span class="num">R$ 1.312</span> <em>34%</em></li>
+            <li><span class="cat-dot cat-dot--home"></span> Moradia <span class="num">R$ 1.050</span> <em>27%</em></li>
+            <li><span class="cat-dot cat-dot--car"></span> Transporte <span class="num">R$ 520</span> <em>13%</em></li>
+            <li><span class="cat-dot cat-dot--fun"></span> Lazer <span class="num">R$ 410</span> <em>10%</em></li>
+            <li><span class="cat-dot cat-dot--other"></span> Outros <span class="num">R$ 622</span> <em>16%</em></li>
+          </ul>
+        </div>
+
+        <div class="demo__panel" id="demo-insights" data-panel="insights" hidden>
+          <div class="insight">
+            <i class="ph-duotone ph-magic-wand" aria-hidden="true"></i>
+            <div>
+              <strong>Gasto incomum detectado:</strong> R$ 289 em "Assinaturas", 3x acima da sua média de R$ 96.
+              <span class="insight__cta">Revisar transação →</span>
+            </div>
+          </div>
+          <div class="insight">
+            <i class="ph-duotone ph-trend-up" aria-hidden="true"></i>
+            <div>
+              <strong>Ritmo positivo:</strong> mantendo esse padrão, você fecha o mês com <span class="num">R$ 2.300</span> de sobra.
+            </div>
+          </div>
+          <div class="insight">
+            <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+            <div>
+              <strong>Seu perfil:</strong> você se parece com o grupo "Planejadores" — 78% deles quitam metas em menos de 6 meses.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7. COMO FUNCIONA ============ -->
+    <section class="section how" id="como-funciona">
+      <div class="container">
+        <p class="section__eyebrow reveal">Como funciona</p>
+        <h2 class="section__title reveal">Do caos ao controle em 3 passos</h2>
+
+        <ol class="how__steps">
+          <li class="how__step reveal">
+            <span class="how__number">1</span>
+            <h3>Cadastre-se grátis</h3>
+            <p>E-mail, senha e 30 segundos. Sem cartão de crédito, sem pegadinha.</p>
+          </li>
+          <li class="how__step reveal">
+            <span class="how__number">2</span>
+            <h3>Registre seus gastos</h3>
+            <p>Lance receitas e despesas em segundos, do celular ou do computador.</p>
+          </li>
+          <li class="how__step reveal">
+            <span class="how__number">3</span>
+            <h3>Veja o resultado</h3>
+            <p>Gráficos, alertas e insights de IA mostrando exatamente onde economizar.</p>
+          </li>
+        </ol>
+        <div class="how__cta reveal">
+          <a href="#cadastro" class="btn btn--primary btn--xl">Criar conta grátis</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 8. DEPOIMENTOS ============ -->
+    <section class="section testimonials" id="depoimentos">
+      <div class="container">
+        <p class="section__eyebrow reveal">Quem já usa</p>
+        <h2 class="section__title reveal">Gente real, resultado real</h2>
+
+        <div class="testimonials__grid">
+          <figure class="testimonial testimonial--featured reveal">
+            <div class="testimonial__stars" aria-label="5 de 5 estrelas">
+              <i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i>
+            </div>
+            <blockquote>"Em 3 meses, cortei <strong class="num">R$ 900</strong> em gastos que eu nem percebia. O alerta de anomalia do 5 Centavos encontrou até uma assinatura que eu tinha esquecido de cancelar."</blockquote>
+            <figcaption>
+              <img src="https://i.pravatar.cc/96?img=5" alt="Foto de Ana Clara" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback avatar-fallback--lg\'>AC</span>'" />
+              <div>
+                <strong>Ana Clara</strong>
+                <span>Designer · São Paulo</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial reveal">
+            <div class="testimonial__stars" aria-label="5 de 5 estrelas">
+              <i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i>
+            </div>
+            <blockquote>"A categorização automática me poupa umas 2 horas por semana de planilha. Economizei <strong class="num">R$ 300</strong> já no primeiro mês."</blockquote>
+            <figcaption>
+              <img src="https://i.pravatar.cc/96?img=12" alt="Foto de Rafael Martins" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback\'>RM</span>'" />
+              <div>
+                <strong>Rafael Martins</strong>
+                <span>Engenheiro · Belo Horizonte</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial reveal">
+            <div class="testimonial__stars" aria-label="5 de 5 estrelas">
+              <i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i>
+            </div>
+            <blockquote>"Finalmente consegui fazer minha reserva de emergência sair do papel. A barra de progresso da meta vicia no melhor sentido."</blockquote>
+            <figcaption>
+              <img src="https://i.pravatar.cc/96?img=32" alt="Foto de Juliana Prado" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback\'>JP</span>'" />
+              <div>
+                <strong>Juliana Prado</strong>
+                <span>Professora · Curitiba</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial reveal">
+            <div class="testimonial__stars" aria-label="5 de 5 estrelas">
+              <i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i><i class="ph-fill ph-star" aria-hidden="true"></i>
+            </div>
+            <blockquote>"Uso em 3 contas diferentes e o painel consolida tudo. Parei de me perguntar 'cadê meu dinheiro?' toda semana."</blockquote>
+            <figcaption>
+              <img src="https://i.pravatar.cc/96?img=15" alt="Foto de Pedro Henrique" loading="lazy" onerror="this.outerHTML='<span class=\'avatar-fallback\'>PH</span>'" />
+              <div>
+                <strong>Pedro Henrique</strong>
+                <span>Autônomo · Recife</span>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 9. GRÁTIS PARA SEMPRE ============ -->
+    <section class="section free" id="gratis">
+      <div class="container">
+        <h2 class="section__title reveal">Grátis de verdade. <span class="highlight">Para sempre.</span></h2>
+        <p class="section__subtitle reveal">Sem planos, sem versão "premium", sem pegadinha. Todos os recursos liberados desde o primeiro acesso.</p>
+
+        <div class="free__card reveal">
+          <div class="free__price">
+            <span class="free__currency">R$</span>
+            <span class="free__amount num">0</span>
+            <span class="free__period">/mês</span>
+          </div>
+          <ul class="free__list">
+            <li><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Transações ilimitadas</li>
+            <li><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Categorização automática com IA</li>
+            <li><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Metas e orçamentos ilimitados</li>
+            <li><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Alertas de gastos fora do padrão</li>
+            <li><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Relatórios e gráficos completos</li>
+            <li><i class="ph-fill ph-check-circle" aria-hidden="true"></i> Exportação de dados em CSV</li>
+          </ul>
+          <a href="#cadastro" class="btn btn--primary btn--xl">Criar conta grátis</a>
+          <p class="free__microcopy">Sem cartão de crédito · Cancele quando quiser (mas é grátis, então relaxa)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10. FAQ ============ -->
+    <section class="section faq" id="faq">
+      <div class="container container--narrow">
+        <p class="section__eyebrow reveal">Perguntas frequentes</p>
+        <h2 class="section__title reveal">Tire suas dúvidas</h2>
+
+        <div class="faq__list">
+          <div class="faq__item reveal">
+            <button class="faq__question" aria-expanded="false">
+              É grátis mesmo? Qual é a pegadinha?
+              <i class="ph ph-plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq__answer" hidden>
+              <p>Nenhuma pegadinha. O 5 Centavos é um projeto pessoal de código aberto, criado para ajudar pessoas a organizarem suas finanças. Todos os recursos são gratuitos, para sempre.</p>
+            </div>
+          </div>
+
+          <div class="faq__item reveal">
+            <button class="faq__question" aria-expanded="false">
+              Meus dados estão seguros?
+              <i class="ph ph-plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq__answer" hidden>
+              <p>Sim. Suas senhas são protegidas com criptografia bcrypt e o acesso à sua conta usa tokens seguros (JWT). Seus dados financeiros são isolados por usuário — ninguém mais os vê, e nós não vendemos dados.</p>
+            </div>
+          </div>
+
+          <div class="faq__item reveal">
+            <button class="faq__question" aria-expanded="false">
+              Preciso de cartão de crédito para começar?
+              <i class="ph ph-plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq__answer" hidden>
+              <p>Não. O cadastro pede apenas e-mail e senha. Como o serviço é 100% gratuito, nunca vamos pedir dados de pagamento.</p>
+            </div>
+          </div>
+
+          <div class="faq__item reveal">
+            <button class="faq__question" aria-expanded="false">
+              Posso importar minha planilha ou extrato?
+              <i class="ph ph-plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq__answer" hidden>
+              <p>Sim. O 5 Centavos tem um processo de importação de arquivos CSV que organiza e valida seus lançamentos automaticamente, incluindo categorias e contas.</p>
+            </div>
+          </div>
+
+          <div class="faq__item reveal">
+            <button class="faq__question" aria-expanded="false">
+              E se eu quiser sair? Consigo levar meus dados?
+              <i class="ph ph-plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq__answer" hidden>
+              <p>Claro. Seus dados pertencem a você. Você pode exportar tudo em formato CSV a qualquer momento, sem custo e sem burocracia.</p>
+            </div>
+          </div>
+
+          <div class="faq__item reveal">
+            <button class="faq__question" aria-expanded="false">
+              Funciona no celular?
+              <i class="ph ph-plus" aria-hidden="true"></i>
+            </button>
+            <div class="faq__answer" hidden>
+              <p>Sim. O painel é 100% responsivo e funciona no navegador de qualquer celular, tablet ou computador, sem precisar instalar nada.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11. CTA FINAL ============ -->
+    <section class="cta-final">
+      <div class="container cta-final__inner reveal">
+        <h2>Comece hoje. É grátis para sempre.</h2>
+        <p>Junte-se a milhares de pessoas que já sabem para onde vai cada real.</p>
+        <a href="#cadastro" class="btn btn--dark btn--xl">Criar conta grátis</a>
+        <p class="cta-final__microcopy">Sem cartão de crédito · Leva 30 segundos</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ 12. RODAPÉ ============ -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <a href="#topo" class="nav__logo">
+          <i class="ph-duotone ph-coins" aria-hidden="true"></i>
+          <span>5 Centavos</span>
+        </a>
+        <p>Clareza que vale ouro. Controle financeiro simples, inteligente e gratuito.</p>
+        <div class="footer__social">
+          <a href="#" aria-label="GitHub do projeto"><i class="ph ph-github-logo" aria-hidden="true"></i></a>
+          <a href="#" aria-label="Instagram"><i class="ph ph-instagram-logo" aria-hidden="true"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="ph ph-linkedin-logo" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <nav class="footer__links" aria-label="Links do rodapé">
+        <div>
+          <h4>Produto</h4>
+          <a href="#recursos">Recursos</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <a href="#">Termos de uso</a>
+          <a href="#">Privacidade</a>
+        </div>
+      </nav>
+      <div class="footer__seals">
+        <span><i class="ph-duotone ph-shield-check" aria-hidden="true"></i> LGPD</span>
+        <span><i class="ph-duotone ph-lock-key" aria-hidden="true"></i> Criptografia</span>
+        <span><i class="ph-duotone ph-heart" aria-hidden="true"></i> 100% grátis</span>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© 2026 5 Centavos · Feito com dedicação no Brasil</p>
+    </div>
+  </footer>
+
+  <!-- Barra de CTA fixa no mobile -->
+  <div class="sticky-cta" id="sticky-cta" aria-hidden="true">
+    <a href="#cadastro" class="btn btn--primary btn--block">Começar grátis</a>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

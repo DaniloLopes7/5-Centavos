@@ -2,137 +2,132 @@
 
 ## 1. Objetivo
 
-Definição dos requisitos funcionais e não funcionais para orientar o desenvolvimento do projeto.
+Definição dos requisitos funcionais e não funcionais que orientam o desenvolvimento do projeto.
+
+Módulo raiz do código: `src/cinco_centavos/`.
 
 ## 2. Requisitos Funcionais
 
 ### RF01 — Cadastro de usuário ✅
-Permitir a criação de contas de usuário.
-**Implementado em:** `UserService.register()`, `POST /api/v1/auth/register`
+Permitir a criação de contas de usuário, com categorias padrão criadas automaticamente.
+**Implementado em:** `services/users.py` (`UserService.register`), `POST /api/v1/auth/register`
 
 ### RF02 — Autenticação ✅
-Permitir login de usuários cadastrados.
-**Implementado em:** `UserService.authenticate()`, `POST /api/v1/auth/login` (JWT)
+Permitir login de usuários cadastrados com emissão de JWT.
+**Implementado em:** `UserService.authenticate`, `POST /api/v1/auth/login`, `core/security.py`
 
 ### RF03 — Gerenciamento de contas ✅
 Cadastrar, consultar, editar e remover contas financeiras.
-**Implementado em:** `AccountService`, `AccountRepository`, endpoints `/users/me/accounts`
+**Implementado em:** `AccountService`, `AccountRepository`, endpoints `/api/v1/users/me/accounts`
 
 ### RF04 — Cadastro de receitas ✅
 Registrar receitas (valor, descrição, categoria, conta e data).
-**Implementado em:** `TransactionService.create()` com tipo RECEITA, `POST /api/v1/transactions`
+**Implementado em:** `TransactionService.create_transaction` com tipo `RECEITA`
 
 ### RF05 — Cadastro de despesas ✅
 Registrar despesas (valor, descrição, categoria, conta e data).
-**Implementado em:** `TransactionService.create()` com tipo DESPESA, `POST /api/v1/transactions`
+**Implementado em:** `TransactionService.create_transaction` com tipo `DESPESA`
 
 ### RF06 — Gerenciamento de categorias ✅
-Criar e gerenciar categorias financeiras.
-**Implementado em:** `CategoryService`, `CategoryRepository`, endpoints `/users/me/categories`
+Criar e gerenciar categorias financeiras (únicas por usuário + nome + tipo).
+**Implementado em:** `CategoryService`, endpoints `/api/v1/users/me/categories`
 
 ### RF07 — Consulta de saldo ✅
-Calcular e exibir o saldo das contas.
-**Implementado em:** `AccountService.calculate_balance()`, `GET /users/me/accounts`
+Calcular e exibir o saldo das contas (inicial + receitas − despesas).
+**Implementado em:** `AccountService` + `AnalyticsRepository.account_transaction_totals`
 
 ### RF08 — Consulta de transações ✅
-Consultar o histórico de transações do usuário.
-**Implementado em:** `TransactionService.get_user_transactions()`, `GET /api/v1/transactions`
+Consultar o histórico com filtros por conta, tipo e período.
+**Implementado em:** `TransactionService.list_transactions`, `GET /api/v1/transactions`
 
 ### RF09 — Edição e exclusão de transações ✅
-Permitir a alteração ou remoção de transações.
-**Implementado em:** `TransactionService.update()/delete()`, `PUT/DELETE /api/v1/transactions/{id}`
+Permitir a alteração ou remoção de transações com reflexo imediato no saldo.
+**Implementado em:** `TransactionService.update_transaction/delete_transaction`
 
 ### RF10 — Relatórios financeiros ✅
-Gerar relatórios de receitas, despesas e saldos.
-**Implementado em:** `AnalyticsService.get_financial_summary()`, `GET /api/v1/analytics/summary`
+Gerar relatórios de receitas, despesas e saldos por período.
+**Implementado em:** `AnalyticsService.get_financial_summary`, `GET /api/v1/analytics/summary`
 
 ### RF11 — Indicadores financeiros ✅
-Apresentar indicadores da situação financeira.
-**Implementado em:** `AnalyticsService`, endpoints `/api/v1/analytics/*`, Dashboard
+Taxa de poupança, totais, contagens e destaques por categoria.
+**Implementado em:** `AnalyticsService`, endpoints `/api/v1/analytics/*`
 
 ### RF12 — Análise de dados ✅
-Realizar análises utilizando técnicas de Analytics.
-**Implementado em:** `AnalyticsService`, `AnalyticsRepository`, `src/analytics/`
+Agregações por categoria e por mês com percentuais e médias.
+**Implementado em:** `AnalyticsService`, `AnalyticsRepository`
 
 ### RF13 — Visualização de dados ✅
-Apresentar dados via gráficos e visualizações.
-**Implementado em:** Dashboard Streamlit com Plotly (pizza, barras, linhas, scatter)
+Gráficos de pizza (categorias) e linhas (evolução mensal) no dashboard.
+**Implementado em:** Dashboard Streamlit com Plotly (`dashboard/components.py`)
 
 ### RF14 — Importação de dados ✅
-Importar transações via arquivos CSV.
-**Implementado em:** ETL (`src/etl/load_data.py`) carrega CSVs iniciais
+Importar transações e dados iniciais via arquivos CSV, descartando registros inválidos.
+**Implementado em:** `cinco_centavos.etl.load_data` + `data/*.csv`
 
 ### RF15 — Exportação de dados ⏳
-Exportar dados financeiros.
-**Status:** Planejado para próxima iteração (CSV/Excel/PDF)
+Exportar dados financeiros (CSV/Excel/PDF).
+**Status:** Planejado para próxima iteração.
 
 ### RF16 — Metas financeiras ✅
-Criar e acompanhar metas de economia.
-**Implementado em:** `GoalService`, `GoalRepository`, endpoints `/api/v1/goals`, Dashboard
+Criar e acompanhar metas de economia com progresso incremental.
+**Implementado em:** `GoalService`, endpoints `/api/v1/goals` e `POST /api/v1/goals/{id}/progress`
 
 ### RF17 — Inteligência Artificial ✅
-Utilizar IA para análises e sugestões automáticas.
-**Implementado em:** `src/ai/` (5 modelos), `FinancialAdvisor`, endpoints `/api/v1/ai/*`
+Classificação de categorias, detecção de anomalias, previsão de fluxo de caixa, perfis de gasto e insights.
+**Implementado em:** `cinco_centavos.ai` (5 modelos), endpoints `/api/v1/ai/*`
 
 ---
 
 ## 3. Requisitos Não Funcionais
 
 ### RNF01 — Segurança ✅
-Proteção de dados e armazenamento de senhas via hash (bcrypt).
-**Implementado:** bcrypt para senhas, JWT para autenticação, isolamento por user_id
+Bcrypt para senhas, JWT para autenticação, rate limiting em endpoints sensíveis (slowapi), container não-root.
 
 ### RNF02 — Privacidade ✅
-Acesso restrito aos próprios dados do usuário.
-**Implementado:** Todas queries filtram por `user_id`, validação em Services
+Todas as queries filtram por `user_id`; acesso a recursos de terceiros responde 404.
 
 ### RNF03 — Desempenho ✅
-Eficiência em operações comuns.
-**Implementado:** Connection pooling SQLAlchemy, queries otimizadas, índices PK/FK
+Connection pooling, `pool_pre_ping`, índices em PK/FK e colunas de filtro, agregações no banco.
 
 ### RNF04 — Manutenibilidade ✅
-Código modular e organizado.
-**Implementado:** Arquitetura em camadas (API, Services, Repositories, Schemas, AI)
+Arquitetura em camadas: API → Services → Repositories → Models, com Schemas Pydantic na fronteira.
 
 ### RNF05 — Escalabilidade ✅
-Arquitetura que permita a evolução do sistema.
-**Implementado:** Arquitetura em camadas, PostgreSQL, Docker, stateless API
+API stateless, PostgreSQL, containers separados por responsabilidade.
 
 ### RNF06 — Testabilidade ✅
-Implementação de testes automatizados nas funções principais.
-**Implementado:** Pytest (6 testes passando), cobertura Services/Repositories
+Pytest com 41 testes: unitários (services, IA), integração (API) e e2e (jornadas).
 
 ### RNF07 — Portabilidade ✅
-Execução em ambientes compatíveis com as dependências.
-**Implementado:** Docker multi-stage, Python 3.11+, requirements.txt
+Python 3.11+, dependências pinadas em `requirements.txt`, Docker multi-stage.
 
 ### RNF08 — Documentação ✅
-Documentar funcionalidades e decisões técnicas.
-**Implementado:** Docs completas, Swagger/OpenAPI, README, docstrings
+Docs em `docs/`, OpenAPI/Swagger automático em `/docs`, docstrings e README.
 
 ### RNF09 — Versionamento ✅
-Uso de Git para histórico de alterações.
-**Implementado:** Git repo com tags por versão, commits semânticos
+Git com commits semânticos, CHANGELOG.md e SemVer.
 
 ### RNF10 — Containerização ✅
-Execução via containers Docker.
-**Implementado:** Dockerfile multi-stage, docker-compose.yml, Makefile
+Dockerfile multi-stage, docker-compose (db, api, dashboard, etl), health checks e restart policies.
 
 ---
 
-## 4. Prioridades (Atualizado)
+## 4. Prioridades
 
 ### ✅ Concluídos (Alta)
-* Cadastro, Autenticação, Contas, Receitas, Despesas, Categorias, Saldo, Transações, Metas
+Cadastro, Autenticação, Contas, Receitas, Despesas, Categorias, Saldo, Transações
 
 ### ✅ Concluídos (Média)
-* Relatórios, Indicadores, Metas, Importação (ETL), Analytics, Dashboard
+Relatórios, Indicadores, Metas, Importação (ETL), Analytics, Dashboard
 
-### ✅ Concluídos (Baixa/Futura - Agora Concluídos)
-* IA (Classificação, Anomalias, Previsão, Insights, Clustering)
-* Docker (Multi-stage, Compose, Makefile), Deploy
+### ✅ Concluídos (Baixa/Futura)
+IA (Classificação, Anomalias, Previsão, Insights, Clustering), Docker + Deploy
+
+### ⏳ Planejado
+RF15 — Exportação de dados (CSV/Excel/PDF)
 
 ---
 
 ## 5. Evolução
-Os requisitos foram refinados e **todos implementados** conforme as versões v0.1.0 a v1.0.0.
+
+Requisitos refinados ao longo das versões v0.1.0–v1.0.0. Em **v1.1.0** o código-fonte foi reescrito do zero sobre a mesma especificação, com arquitetura em camadas, ORM declarativo, observabilidade estruturada e suíte de testes ampliada.

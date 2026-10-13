@@ -2,7 +2,7 @@
 
 ## 1. Objetivo
 
-Este documento descreve a organização dos componentes do **5 Centavos** e como eles se comunicam, permitindo a evolução gradual do projeto.
+Este documento descreve a organização dos componentes do **5 Centavos** e como eles se comunicam, na arquitetura em camadas adotada na v1.1.0.
 
 ---
 
@@ -18,144 +18,131 @@ Este documento descreve a organização dos componentes do **5 Centavos** e como
 ## 3. Arquitetura geral
 
 ```text
-Usuário → Interface/UI (Streamlit/CLI) → API (FastAPI) → Services → Repositories → Database (PostgreSQL)
+Usuário → Dashboard (Streamlit) → API REST (FastAPI) → Services → Repositories → PostgreSQL
                                               ↓
-                                    Analytics & AI (Scikit-learn)
+                                   Analytics & IA (Scikit-learn)
 ```
 
-Os dados do banco alimentam as camadas de **Analytics e IA**.
+Os dados do banco alimentam as camadas de **Analytics e IA**, sempre isolados por `user_id`.
 
 ---
 
 ## 4. Camadas
 
 ### 4.1 Interface
-Responsável pela interação com o usuário:
-- **Streamlit Dashboard**: Dashboard interativo com gráficos Plotly
-- **CLI**: Interface de linha de comando (main.py)
-- **API Docs**: Swagger/OpenAPI em /docs
+- **Dashboard Streamlit** (`dashboard/`): autenticação, contas, transações, categorias, metas, gráficos Plotly e página de IA;
+- **API Docs**: Swagger/OpenAPI gerado automaticamente em `/docs`.
 
-### 4.2 API (FastAPI)
-Disponibiliza os recursos do sistema via REST:
-- Autenticação JWT (python-jose)
-- Validação de dados com Pydantic
-- Documentação automática OpenAPI/Swagger
-- Endpoints organizados por domínio (auth, users, transactions, goals, analytics, ai)
+### 4.2 API (`api/`)
+- FastAPI com versionamento de rotas em `/api/v1`;
+- Autenticação JWT via `HTTPBearer` (dependência `get_current_user`);
+- Validação de dados com Pydantic v2;
+- Mapeamento de exceções de domínio para HTTP (404/409/422/401) em `api/main.py`;
+- Rate limiting (slowapi) nos endpoints sensíveis e logging estruturado (structlog).
 
-### 4.3 Camada de Serviços (`src/services/`)
-Contém as regras de negócio:
-- `UserService`: Autenticação, registro, categorias padrão
-- `AccountService`: CRUD contas, cálculo de saldo
-- `CategoryService`: CRUD categorias
-- `TransactionService`: CRUD transações, validação tipo categoria
-- `GoalService`: CRUD metas, progresso
-- `AnalyticsService`: Resumos, indicadores, análises
+### 4.3 Serviços (`services/`) — regras de negócio
+- `UserService`: registro (com categorias padrão) e autenticação;
+- `AccountService`: CRUD de contas e cálculo de saldo;
+- `CategoryService`: CRUD de categorias com unicidade nome+tipo;
+- `TransactionService`: CRUD de transações com validação de vínculos e tipos;
+- `GoalService`: CRUD de metas e progresso;
+- `AnalyticsService`: resumo, indicadores, breakdown por categoria e evolução mensal;
+- `services/exceptions.py`: erros de domínio (`NotFoundError`, `ConflictError`, `BusinessRuleError`, `UnauthorizedError`).
 
-### 4.4 Camada de Repositórios (`src/repositories/`)
-Abstração de acesso a dados:
-- `UserRepository`, `AccountRepository`, `CategoryRepository`
-- `TransactionRepository`, `GoalRepository`, `AnalyticsRepository`
-- Usam SQLAlchemy Core com queries SQL parametrizadas
+### 4.4 Repositórios (`repositories/`) — acesso a dados
+- `BaseRepository` genérico (get/create/update/delete);
+- `UserRepository`, `AccountRepository`, `CategoryRepository`, `TransactionRepository`, `GoalRepository` — todos com escopo obrigatório por usuário;
+- `AnalyticsRepository`: agregações SQL (totais por tipo, por categoria, por mês e por conta).
 
-### 4.5 Camada de Persistência
-- **PostgreSQL 16** como banco principal
-- **SQLAlchemy 2.0** Core (Engine, Text queries)
-- Connection pooling e transações via context managers
-- Migração de SQLite para PostgreSQL concluída (v0.4.0)
+### 4.5 Persistência (`core/database.py`, `models/`)
+- PostgreSQL 16 em produção; SQLite disponível para desenvolvimento/testes;
+- **SQLAlchemy 2.0 ORM declarativo** com `Mapped`/`mapped_column`, relacionamentos e integridade (`CHECK`, FK `CASCADE`/`RESTRICT`, `UNIQUE`);
+- Valores monetários em `NUMERIC(14,2)` (nunca ponto flutuante);
+- Tabelas criadas idempotentemente no startup (`init_db`).
 
-### 4.6 Schemas (`src/schemas/`)
-Validação e serialização com Pydantic v2:
-- Models de request/response
-- Enums para tipos controlados
-- Configuração `from_attributes=True` para ORM
+### 4.6 Schemas (`schemas/`)
+- Contratos de request/response por domínio;
+- Enums compartilhados com os models (`models/enums.py`);
+- `from_attributes=True` para serialização ORM;
+- Regras básicas na borda (`amount > 0`, tamanhos de texto).
+
+### 4.7 Núcleo (`core/`)
+- `config.py`: `pydantic-settings` lendo `.env` (single source de configuração);
+- `security.py`: bcrypt + JWT (python-jose);
+- `logging.py`: logging estruturado (console em dev, JSON em produção).
 
 ---
 
 ## 5. Analytics e IA
 
-### Analytics (`src/services/AnalyticsService`, `src/repositories/AnalyticsRepository`)
-- Resumo financeiro (receitas, despesas, saldo, taxa de poupança)
-- Análise por categoria (receitas/despesas)
-- Evolução mensal com médias móveis
-- Indicadores: total receitas, total despesas, saldo, contas, transações
+### Analytics
+- Resumo financeiro (receitas, despesas, saldo, taxa de poupança);
+- Análise por categoria com percentuais;
+- Evolução mensal com saldo acumulado;
+- Tudo consolidado em SQL e exposto via `GET /api/v1/analytics/*`.
 
-### IA (`src/ai/`)
-- **TransactionClassifier**: RandomForest para classificação automática de categorias
-- **AnomalyDetector**: Isolation Forest para detecção de gastos anômalos
-- **CashFlowPredictor**: Previsão de fluxo de caixa baseada em médias móveis
-- **SpendingClusterer**: K-Means para perfis de comportamento financeiro
-- **FinancialAdvisor**: Orquestrador que combina todos os modelos
+### IA (`ai/`)
+- **TransactionClassifier**: TF-IDF (1–2 gramas) + RandomForest treinado no histórico do próprio usuário;
+- **AnomalyDetector**: Isolation Forest sobre valor e dia do mês das despesas;
+- **CashFlowPredictor**: médias móveis dos últimos meses por tipo;
+- **SpendingClusterer**: K-Means sobre valores de despesa para perfil de consumo;
+- **FinancialAdvisor**: orquestrador — treina, gera insights transparentes (fatores explicitados);
+- Mínimo de 8 transações do usuário para treino; abaixo disso as respostas são graciosas.
 
 ---
 
 ## 6. Fluxo de Dados
 
 ```text
-Usuário → Interface (Streamlit/CLI) → API (FastAPI) 
-    → Services (Regras de Negócio) → Repositories (Acesso a Dados) 
-    → PostgreSQL
-    ↓
-Analytics Repository → Analytics Service → API → Dashboard
-    ↓
-AI Models (Classifier, AnomalyDetector, Predictor) → Insights → API → Dashboard
+Usuário → Dashboard → API → Services → Repositories → PostgreSQL
+                                          ↓
+                 Analytics Repository → AnalyticsService → API → Dashboard
+                                          ↓
+                 AI Models (Classifier, Detector, Predictor, Clusterer) → Advisor → API → Dashboard
 ```
 
 ---
 
-## 7. Organização do Código (Implementado)
+## 7. Organização do Código
 
 ```text
 5-Centavos/
-├── docs/
+├── docs/                          # especificação, requisitos, RN, CU, arquitetura, modelo, DER, roadmap
+├── data/                          # CSVs seed para o ETL
 ├── src/
-│   ├── api/
-│   │   ├── main.py
-│   │   └── v1/
-│   │       ├── endpoints/
-│   │       │   ├── auth.py
-│   │       │   ├── users.py
-│   │       │   ├── transactions.py
-│   │       │   ├── goals.py
-│   │       │   ├── analytics.py
-│   │       │   └── ai.py
-│   │       ├── deps.py
-│   │       └── router.py
-│   ├── dashboard/
-│   │   └── app.py
-│   ├── ai/
-│   │   └── __init__.py
-│   ├── analytics/
-│   ├── services/
-│   ├── repositories/
-│   ├── schemas/
-│   ├── etl/
 │   └── cinco_centavos/
-│       ├── main.py
-│       └── database.py
-│
-├── tests/
-├── data/
-├── Dockerfile
-├── docker-compose.yml
+│       ├── core/                  # config, database, security, logging
+│       ├── models/                # User, Account, Category, Transaction, Goal + enums
+│       ├── schemas/               # contratos Pydantic por domínio
+│       ├── repositories/          # acesso a dados com escopo por usuário
+│       ├── services/              # regras de negócio + exceções
+│       ├── api/                   # FastAPI (main, limiter, v1/{deps,router,endpoints})
+│       ├── ai/                    # 5 modelos de IA
+│       ├── etl/                   # importação CSV idempotente
+│       └── dashboard/             # Streamlit (app, api_client, components, pages/)
+├── tests/                         # unit / integration / e2e (41 testes)
+├── Dockerfile                     # multi-stage, usuário não-root
+├── docker-compose.yml             # db + api + dashboard (+ etl profile)
+├── entrypoint.sh                  # modos: api | dashboard | etl
 ├── Makefile
-├── requirements.txt
-└── README.md
+├── pyproject.toml / requirements.txt
+└── README.md / CHANGELOG.md
 ```
 
 ---
 
 ## 8. Segurança e Testes
 
-* **Segurança:** Senhas com bcrypt, JWT para autenticação, isolamento de dados por usuário (user_id em todas queries)
-* **Testes:** Pytest para validar regras de negócio e integração (6 testes passando)
-* **Validação:** Pydantic v2 em todos endpoints
+* **Segurança:** bcrypt, JWT, isolamento por `user_id`, rate limiting, segredos via `.env` (nunca commitados);
+* **Testes:** 41 testes (Pytest) cobrindo regras de negócio, API e jornadas e2e; banco de teste SQLite em memória isolado por teste;
+* **Validação:** Pydantic v2 na API + integridade no banco + regras nos serviços.
 
 ---
 
 ## 9. Deploy e Operação
 
-* **Docker:** Multi-stage build, usuário não-root
-* **Docker Compose:** PostgreSQL + API + Dashboard (+ ETL opcional)
-* **Health Checks:** PostgreSQL (pg_isready), API (/health)
-* **Makefile:** Comandos de desenvolvimento (install, test, run-api, docker-up, etc.)
-* **Variáveis de ambiente:** .env para configuração
+* **Docker:** multi-stage build (builder/runtime), usuário não-root, venv dedicada em `/opt/venv`;
+* **Docker Compose:** `db` (PostgreSQL 16, volume persistido), `api`, `dashboard` e perfil opcional `etl`;
+* **Health Checks:** `pg_isready` no banco e `GET /health` na API;
+* **Makefile:** `install`, `test`, `run-api`, `run-dashboard`, `run-etl`, `docker-*`;
+* **Configuração:** variáveis de ambiente documentadas em `.env.example`.
