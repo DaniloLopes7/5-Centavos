@@ -14,6 +14,12 @@ from __future__ import annotations
 import os
 
 import streamlit as st
+
+# Compatibilidade com dependências legadas que ainda usam @st.cache.
+# O Streamlit 1.62+ removeu esse alias; o cookie manager usa o cache para dados.
+if not hasattr(st, "cache"):
+    st.cache = st.cache_data
+
 from extra_streamlit_components import CookieManager
 
 from cinco_centavos.dashboard import theme
