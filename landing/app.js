@@ -7,12 +7,9 @@
 (function () {
   "use strict";
 
-  /* ------------------------------------------------------------
-     CONFIGURAÇÃO: aponte para as URLs reais da API e do dashboard.
-     Para produção, inclua a origem desta landing em CORS_ORIGINS.
-  ------------------------------------------------------------ */
-  var API_BASE_URL = "http://localhost:8000/api/v1";
-  var DASHBOARD_URL = "http://localhost:8501";
+  /* URLs centralizadas em config.js (local ou produção). */
+  var API_BASE_URL = window.API_URL.replace(/\/+$/, "") + "/api/v1";
+  var DASHBOARD_URL = window.DASHBOARD_URL.replace(/\/+$/, "");
 
   var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
