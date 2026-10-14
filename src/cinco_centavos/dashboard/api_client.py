@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any
 
 import httpx
 
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+from cinco_centavos.dashboard.settings import get_setting
+
+API_URL = get_setting("API_URL", "http://localhost:8000").rstrip("/")
 
 
 class ApiError(Exception):

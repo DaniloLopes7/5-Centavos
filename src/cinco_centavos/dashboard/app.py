@@ -11,9 +11,13 @@ Execução::
 
 from __future__ import annotations
 
-import os
+import sys
+from pathlib import Path
 
 import streamlit as st
+
+# O Streamlit Community Cloud inicia a aplicação a partir da raiz do repositório.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 # Compatibilidade com dependências legadas que ainda usam @st.cache.
 # O Streamlit 1.62+ removeu esse alias; o cookie manager usa o cache para dados.
@@ -24,6 +28,7 @@ from extra_streamlit_components import CookieManager
 
 from cinco_centavos.dashboard import theme
 from cinco_centavos.dashboard.api_client import ApiClient, ApiError
+from cinco_centavos.dashboard.settings import get_setting
 
 st.set_page_config(
     page_title="5 Centavos — Painel",
@@ -33,7 +38,7 @@ st.set_page_config(
 )
 theme.inject()
 
-LANDING_URL = os.getenv("LANDING_URL", "http://localhost:8080")
+LANDING_URL = get_setting("LANDING_URL", "http://localhost:8080").rstrip("/")
 COOKIE_NAME = "c5c_token"
 
 cookie_manager = CookieManager(key="c5c_cookie_manager")

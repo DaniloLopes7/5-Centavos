@@ -5,6 +5,18 @@ Todas as mudanças notáveis deste projeto são documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+### Changed
+- Vercel passa a publicar apenas a landing estática de `landing/`.
+- Deploy preparado para API FastAPI e PostgreSQL gerenciado no Render; Streamlit documentado para Community Cloud ou host persistente.
+- Configuração do dashboard aceita URLs por variáveis de ambiente ou `st.secrets`.
+
+### Fixed
+- Removidos do README os marcadores de conflito de merge e mantida sua versão detalhada.
+- Landing centraliza os endereços da API e do dashboard; localhost fica restrito ao acesso local.
+- API recusa iniciar em produção com `SECRET_KEY` ausente ou de exemplo.
+
 ## [1.1.0] - 2026-10-12 — Reescrita profissional completa
 
 Reescrita do zero de todo o código-fonte sobre a mesma especificação,

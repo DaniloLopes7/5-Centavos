@@ -20,6 +20,7 @@ htmlcov/
 # Ambiente e segredos
 .env
 .env.local
+.streamlit/secrets.toml
 
 # Bancos locais e artefatos
 *.db

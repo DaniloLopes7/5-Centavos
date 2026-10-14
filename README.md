@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # 5 Centavos 🪙
 
 Plataforma de gestão financeira pessoal com foco em **Ciência de Dados, Analytics e Inteligência Artificial**.
@@ -18,7 +17,7 @@ Landing page (HTML/CSS/JS) → Dashboard (Streamlit) → API REST (FastAPI) → 
 
 | Tecnologia     | Utilização                          |
 | -------------- | ----------------------------------- |
-| Python 3.11+   | Linguagem principal                 |
+| Python 3.12+   | Linguagem principal                 |
 | PostgreSQL 16  | Banco de dados principal            |
 | SQLAlchemy 2.0 | ORM (modelos declarativos)          |
 | FastAPI        | API REST + OpenAPI/Swagger          |
@@ -36,7 +35,7 @@ Landing page (HTML/CSS/JS) → Dashboard (Streamlit) → API REST (FastAPI) → 
 ## Funcionalidades
 
 ### 🔐 Autenticação
-- **A landing page é a porta de entrada única** (`landing/`): cadastro ou login nela fazem auto-login e redirecionam ao dashboard em `:8501` com o token JWT
+- **A landing page é a porta de entrada única** (`landing/`): cadastro ou login nela fazem auto-login e redirecionam ao dashboard definido por `window.DASHBOARD_URL` em `landing/config.js`, levando o token JWT
 - Registro com hash bcrypt e categorias padrão automáticas
 - Login com JWT; isolamento total de dados por usuário
 
@@ -71,7 +70,7 @@ Landing page (HTML/CSS/JS) → Dashboard (Streamlit) → API REST (FastAPI) → 
 ## Como executar
 
 ### Pré-requisitos
-- Docker & Docker Compose **ou** Python 3.11+ (dev local usa SQLite, sem servidor de banco)
+- Docker & Docker Compose **ou** Python 3.12+ (dev local usa SQLite, sem servidor de banco)
 
 ### Opção 1 — Docker (recomendado)
 
@@ -116,6 +115,42 @@ make run-dashboard  # Streamlit
 make test           # suíte completa (unit + integration + e2e)
 make docker-up      # containers
 ```
+
+## Deploy
+
+Em produção, cada parte roda no serviço adequado: landing estática na Vercel, API FastAPI em um serviço Python com PostgreSQL, e dashboard Streamlit no Streamlit Community Cloud ou em outro serviço persistente. A Vercel não inicia a API Python nem o Streamlit.
+
+### 1. Landing estática na Vercel
+
+1. Mantenha o **Root Directory** do projeto como `.` (raiz do repositório). O `vercel.json` seleciona o preset `Other` e publica somente `landing/` como diretório de saída; não configure um comando de build.
+2. Depois de criar a API e o dashboard, substitua os dois valores de exemplo em `landing/config.js` por suas URLs públicas (`window.API_URL` e `window.DASHBOARD_URL`). Essa configuração é JavaScript estático e não recebe variáveis de ambiente da Vercel durante a execução no navegador.
+3. Faça push para a branch conectada à Vercel. O HTML, CSS, JavaScript e imagens presentes em `landing/` serão publicados como arquivos estáticos.
+
+### 2. API e PostgreSQL no Render
+
+1. No Render, crie um **Blueprint** conectado a este repositório. O `render.yaml` prepara um serviço Python em modo API e um PostgreSQL gerenciado na mesma região. Os planos definidos são pagos; revise ou ajuste os planos no YAML antes de sincronizar o Blueprint.
+2. O Blueprint injeta `DATABASE_URL`, gera `SECRET_KEY` e define `APP_ENV=production`. A API normaliza a URL do PostgreSQL para `postgresql+psycopg2://...`; se usar um banco externo que exija TLS, acrescente `?sslmode=require` à URL.
+3. Quando o deploy terminar, valide `https://<api>.onrender.com/health`; a resposta esperada contém `"status":"ok"`. O caminho `/docs` abre a documentação REST.
+4. O CORS já inclui `https://5-centavos.vercel.app`. Se mudar o domínio da landing, atualize `CORS_ORIGINS` nas variáveis do serviço.
+
+O segredo de produção precisa ter pelo menos 32 caracteres. A API para a inicialização com uma mensagem clara se `SECRET_KEY` estiver ausente ou tiver o valor de exemplo. Não reutilize o valor local de `.env.example` em produção.
+
+### 3. Dashboard Streamlit fora da Vercel
+
+No Streamlit Community Cloud, crie um app apontando para `src/cinco_centavos/dashboard/app.py`, selecione Python 3.12 e, em **Advanced settings → Secrets**, configure:
+
+```toml
+API_URL = "https://<api>.onrender.com"
+LANDING_URL = "https://5-centavos.vercel.app"
+```
+
+O dashboard lê `API_URL` e `LANDING_URL` das variáveis de ambiente e, no Community Cloud, também de `st.secrets`. Para rodá-lo em um host com Docker, use o modo `dashboard` do `entrypoint.sh` e passe `API_URL` apontando para a API (por exemplo, `http://api:8000` dentro do Compose) e `LANDING_URL` apontando para a landing pública. O Streamlit precisa de um serviço com processo persistente e suporte a WebSocket.
+
+### Variáveis de ambiente
+
+`.env.example` lista as variáveis locais e documenta as URLs públicas que devem ser copiadas para `landing/config.js`. No Render, `DATABASE_URL` e `SECRET_KEY` são configuradas pelo Blueprint; no serviço do dashboard configure `API_URL` e `LANDING_URL`. Não versione `.env` nem `secrets.toml`.
+
+O Aurora DSQL conectado pelo Marketplace da Vercel não é usado por esta arquitetura separada: a API passa a rodar no Render e usa o PostgreSQL associado ao Blueprint. Para usar DSQL nesse desenho, seria necessário configurar autenticação AWS disponível diretamente ao serviço da API.
 
 ## Endpoints da API
 
@@ -202,116 +237,3 @@ Os testes usam SQLite em memória isolado por teste — nenhum serviço externo 
 ## Licença
 
 MIT — veja [LICENSE](LICENSE).
-=======
-# 5 Centavos
-
-> Plataforma de gerenciamento financeiro pessoal com foco em **Ciência de Dados, Analytics e Inteligência Artificial**.
-
-## 📌 Sobre o projeto
-
-O **5 Centavos** é uma plataforma de gerenciamento financeiro pessoal desenvolvida para auxiliar usuários a organizar suas finanças, registrar receitas e despesas, acompanhar saldos e transformar dados financeiros em informações úteis para tomada de decisão.
-
-O projeto também possui como objetivo aplicar, de forma prática e incremental, conhecimentos de **Programação, Banco de Dados, Engenharia de Dados, Analytics e Inteligência Artificial**.
-
-## 🎯 Objetivos
-
-* Organizar receitas e despesas;
-* Gerenciar contas financeiras;
-* Acompanhar saldos;
-* Categorizar transações;
-* Gerar relatórios e indicadores;
-* Analisar dados financeiros;
-* Criar visualizações;
-* Desenvolver processos de ETL;
-* Aplicar Inteligência Artificial;
-* Construir uma aplicação organizada, testável e escalável.
-
-## 🛠️ Tecnologias
-
-As tecnologias serão adicionadas progressivamente conforme a evolução do projeto.
-
-| Tecnologia   | Utilização                     |
-| ------------ | ------------------------------ |
-| Python       | Linguagem principal            |
-| SQLite       | Banco de dados inicial         |
-| PostgreSQL   | Banco de dados                 |
-| SQLAlchemy   | ORM                            |
-| FastAPI      | Desenvolvimento da API         |
-| Pandas       | Manipulação e análise de dados |
-| NumPy        | Computação numérica            |
-| Plotly       | Visualização de dados          |
-| Streamlit    | Dashboard                      |
-| Scikit-learn | Machine Learning               |
-| Pytest       | Testes automatizados           |
-| Docker       | Containerização                |
-
-## 📈 Evolução do projeto
-
-O 5 Centavos será desenvolvido através de versões incrementais.
-
-| Versão | Etapa                       | Status                |
-| ------ | --------------------------- | --------------------- |
-| v0.1.0 | Planejamento e documentação | ✅ Finalizado          |
-| v0.2.0 | Estrutura inicial em Python | 🔄 Em desenvolvimento  |
-| v0.3.0 | Sistema financeiro + SQLite | ⏳ Pendente            |
-| v0.4.0 | PostgreSQL + arquitetura    | ⏳ Pendente            |
-| v0.5.0 | API com FastAPI             | ⏳ Pendente            |
-| v0.6.0 | Analytics                   | ⏳ Pendente            |
-| v0.7.0 | Dashboard                   | ⏳ Pendente            |
-| v0.8.0 | Inteligência Artificial     | ⏳ Pendente            |
-| v1.0.0 | Docker + Deploy             | ⏳ Pendente            |
-
-> Cada versão representa um marco funcional do projeto e será registrada através do Git.
-
-## 📂 Estrutura do projeto
-
-```text
-5-Centavos/
-│
-├── docs/
-│   ├── especificacao.md
-│   ├── requisitos.md
-│   ├── regras-de-negocio.md
-│   └── casos-de-uso.md
-│
-├── src/
-├── tests/
-├── data/
-│
-├── main.py
-├── README.md
-├── requirements.txt
-├── .gitignore
-└── LICENSE
-```
-
-## 🧠 Conceitos aplicados
-
-* Python;
-* Programação Orientada a Objetos;
-* Banco de Dados e SQL;
-* APIs REST;
-* Arquitetura de software;
-* Engenharia de Dados;
-* ETL;
-* Análise exploratória de dados;
-* Estatística;
-* Visualização de dados;
-* Machine Learning;
-* Inteligência Artificial;
-* Testes automatizados;
-* Git e GitHub;
-* Docker.
-
-## 🚀 Objetivo final
-
-Construir uma solução capaz de integrar **gestão financeira, processamento de dados, Analytics e Inteligência Artificial** em uma única plataforma.
-
-O projeto será desenvolvido de forma incremental, permitindo acompanhar sua evolução desde uma aplicação inicial até uma solução estruturada e preparada para execução em ambiente de produção.
-
-## 👨‍💻 Autor
-
-**Danilo Almeida Lopes**
-
-Estudante de **Ciência de Dados**, com interesse em **Analytics, Engenharia de Dados, Inteligência Artificial e desenvolvimento de soluções baseadas em dados**.
->>>>>>> Stashed changes
