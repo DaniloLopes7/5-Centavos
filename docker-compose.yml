@@ -24,10 +24,10 @@ services:
     command: ["api"]
     environment:
       DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-five_centavos}
-      SECRET_KEY: ${SECRET_KEY:-troque-esta-chave-por-uma-chave-segura-aleatoria}
-      APP_ENV: ${APP_ENV:-production}
+      SECRET_KEY: ${SECRET_KEY:-chave-insegura-de-desenvolvimento}
+      APP_ENV: ${APP_ENV:-development}
       RUN_ETL: ${RUN_ETL:-false}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8501,http://localhost:3000,http://localhost:8080,http://127.0.0.1:8080}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://5-centavos.vercel.app,http://localhost:8501,http://localhost:3000,http://localhost:8080}
     depends_on:
       db:
         condition: service_healthy
